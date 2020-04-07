@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "760507143908",
+    "firebase_url": "https://memery-d3e79.firebaseio.com",
+    "project_id": "memery-d3e79",
+    "storage_bucket": "memery-d3e79.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760507143908:android:8fceffaace16040d7a7ef1",
+        "android_client_info": {
+          "package_name": "com.mcdev.memery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "760507143908-pi8ctpm1hu5555ivjro3fg6pmhcntr7l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mcdev.memery",
+            "certificate_hash": "e81c76be23b55c292d4cd80e9cb409ffcd543da8"
+          }
+        },
+        {
+          "client_id": "760507143908-r743tmrnrc646gg5gapacglj4hk2mran.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7xmJGpyb8BIO1Yvt7P6s1qLUMkltuRJw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "760507143908-r743tmrnrc646gg5gapacglj4hk2mran.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
