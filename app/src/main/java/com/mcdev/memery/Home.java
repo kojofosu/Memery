@@ -10,9 +10,11 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mcdev.memery.General.GetIntents;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterCore;
 
 public class Home extends AppCompatActivity {
-    TextView textView;
+    TextView fblog, twlog;
     GetIntents getIntents = new GetIntents();
 
     FirebaseAuth firebaseAuth;
@@ -21,12 +23,23 @@ public class Home extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        textView = findViewById(R.id.hello);
+        fblog = findViewById(R.id.hello);
         FacebookSdk.fullyInitialize();
-        textView.setOnClickListener(new View.OnClickListener() {
+        fblog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LoginManager.getInstance().logOut();
+                getIntents.goToLogin(Home.this);
+                Home.this.finish();
+            }
+        });
+
+        twlog = findViewById(R.id.hi);
+        Twitter.getInstance();
+        twlog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TwitterCore.getInstance().getSessionManager().clearActiveSession();
                 getIntents.goToLogin(Home.this);
                 Home.this.finish();
             }

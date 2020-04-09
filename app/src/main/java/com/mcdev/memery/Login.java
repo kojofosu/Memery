@@ -1,5 +1,6 @@
 package com.mcdev.memery;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,7 +19,12 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -39,8 +45,11 @@ public class Login extends AppCompatActivity {
     private static final String TAG = Login.class.getSimpleName();
     LottieAnimationView loginLottieAnimationView;
     VideoView loginVideoView;
-    FirebaseFirestore loginBackgroundFirestoreReference;
     private String backgroundFile;
+
+    //firebase
+    FirebaseFirestore loginBackgroundFirestoreReference;
+    FirebaseAuth firebaseAuth;
 
     //facebook Login
     LoginButton facebookLoginButton;
@@ -56,12 +65,14 @@ public class Login extends AppCompatActivity {
         //init
         init();
 
+        //init firebase stuff
+        initFirebase();
+
         //check if user is already logged in to facebook
         isUserLoggedInToFacebook();
         //check if user is already logged in to twitter
         isUserLoggedIntoTwitter();
-        //init firestore
-        loginBackgroundFirestoreReference =  FirebaseFirestore.getInstance();
+
         loginBackgroundFirestoreReference.collection(StringConstants.LOGIN_BACKGROUND_COLLECTION).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -93,10 +104,17 @@ public class Login extends AppCompatActivity {
         twitterLoginStuff();
     }
 
+    private void initFirebase() {
+        //init firestore
+        loginBackgroundFirestoreReference =  FirebaseFirestore.getInstance();
+        //init firebase authentication
+        firebaseAuth = FirebaseAuth.getInstance();
+    }
+
     private void isUserLoggedIntoTwitter() {
         TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
-        TwitterAuthToken authToken = session.getAuthToken();
-        boolean isLoggedIn = authToken != null && !authToken.isExpired();
+//        TwitterAuthToken authToken = session.getAuthToken();
+        boolean isLoggedIn = session != null;
 
         if (isLoggedIn){
             getIntents.goToHome(Login.this);
@@ -146,9 +164,27 @@ public class Login extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "onSuccessFacebookLogin: " + loginResult);
                 Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
-                //go to home page
-                getIntents.goToHome(Login.this);
-                Login.this.finish();
+                //saving user to firebase auth
+                AccessToken accessToken = loginResult.getAccessToken();
+                AuthCredential authCredential = FacebookAuthProvider.getCredential(accessToken.getToken());
+                //signing user in to firebase with credentials
+                firebaseAuth.signInWithCredential(authCredential)
+                        .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                            @Override
+                            public void onSuccess(AuthResult authResult) {
+                                Log.d(TAG, "onSuccessFirebaseLogin: " + authResult);
+                                Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                //go to home page
+                                getIntents.goToHome(Login.this);
+                                Login.this.finish();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailureFirebaseLogin: " + e.getMessage() + "\n caused by : " + e.getCause());
+                    }
+                });
+
             }
 
             @Override
