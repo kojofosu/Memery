@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -26,12 +24,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mcdev.memery.General.GetIntents;
 import com.mcdev.memery.General.StringConstants;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
-public class MainActivity extends AppCompatActivity {
+public class Login extends AppCompatActivity {
     //init custom made GetIntents
     GetIntents getIntents = new GetIntents();
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = Login.class.getSimpleName();
     LottieAnimationView loginLottieAnimationView;
     VideoView loginVideoView;
     FirebaseFirestore loginBackgroundFirestoreReference;
@@ -40,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     //facebook Login
     LoginButton facebookLoginButton;
     CallbackManager facebookCallbackManager;
+    //twitter login
+    TwitterLoginButton twitterLoginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
         //check if user is already logged in to facebook
         isUserLoggedInToFacebook();
+        //check if user is already logged in to twitter
+        isUserLoggedIntoTwitter();
         //init firestore
         loginBackgroundFirestoreReference =  FirebaseFirestore.getInstance();
         loginBackgroundFirestoreReference.collection(StringConstants.LOGIN_BACKGROUND_COLLECTION).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -80,22 +89,55 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //listeners
-        listeners();
+        facebookLoginStuff();
+        twitterLoginStuff();
+    }
+
+    private void isUserLoggedIntoTwitter() {
+        TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
+        TwitterAuthToken authToken = session.getAuthToken();
+        boolean isLoggedIn = authToken != null && !authToken.isExpired();
+
+        if (isLoggedIn){
+            getIntents.goToHome(Login.this);
+            Login.this.finish();
+        }
+
+        //NOTE : if you want to get token and secret too use uncomment the below code
+        /*TwitterAuthToken authToken = session.getAuthToken();
+        String token = authToken.token;
+        String secret = authToken.secret;*/
+    }
+
+    private void twitterLoginStuff() {
+        //twitter login button
+        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                Log.d(TAG, "onSuccessTwitterLogin: " + result);
+                Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                //go to home page
+                getIntents.goToHome(Login.this);
+                Login.this.finish();
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                Log.d(TAG, "onErrorTwitterLogin: " + exception.getMessage() + "\n caused by :" + exception.getCause());
+            }
+        });
     }
 
     private void isUserLoggedInToFacebook() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
         if (isLoggedIn){
-            getIntents.goToHome(MainActivity.this);
-            MainActivity.this.finish();
-        }else{
-            //do nothing
+            getIntents.goToHome(Login.this);
+            Login.this.finish();
         }
-
     }
 
-    private void listeners() {
+    private void facebookLoginStuff() {
         //facebook login button
         facebookCallbackManager = CallbackManager.Factory.create(); //creating facebook callback
         facebookLoginButton.setPermissions("email", "public_profile");
@@ -105,8 +147,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onSuccessFacebookLogin: " + loginResult);
                 Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
                 //go to home page
-                getIntents.goToHome(MainActivity.this);
-                MainActivity.this.finish();
+                getIntents.goToHome(Login.this);
+                Login.this.finish();
             }
 
             @Override
@@ -163,11 +205,15 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         loginVideoView = findViewById(R.id.login_video_view);
         facebookLoginButton = findViewById(R.id.facebook_login_btn);
+        twitterLoginButton = findViewById(R.id.twitter_login_btn);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //facebook onActivityResult
         facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+        //twitter onActivityResult
+        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
     }
 }

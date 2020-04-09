@@ -1,17 +1,19 @@
 package com.mcdev.memery.General;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.mcdev.memery.Home;
+import com.mcdev.memery.Login;
 
 public class GetIntents{
     public void goToHome(Context context){
         Intent intent = new Intent(context, Home.class);
         context.startActivity(intent);
     }
+        public void goToLogin(Context context){
+        Intent intent = new Intent(context, Login.class);
+        context.startActivity(intent);
+    }
+
 }
