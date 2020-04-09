@@ -22,6 +22,7 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent">
         <com.twitter.sdk.android.core.identity.TwitterLoginButton
+            android:id="@+id/twitter_login_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -32,6 +33,7 @@
             android:layout_marginBottom="10dp"/>
 
         <com.facebook.login.widget.LoginButton
+            android:id="@+id/facebook_login_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -47,44 +49,5 @@
             android:paddingEnd="20dp"
             android:paddingRight="20dp"/>
     </LinearLayout>
-
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="70dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        android:layout_margin="10dp"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:weightSum="3">-->
-
-<!--        <Button-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="Login with "-->
-<!--            android:drawableEnd="@drawable/ic_arrow_forward_black_24dp"-->
-<!--            android:layout_weight="0.5"-->
-<!--            android:background="@android:color/transparent"-->
-<!--            android:paddingEnd="40dp"/>-->
-<!--        <ImageButton-->
-<!--            android:id="@+id/twitter_login_btn"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_weight="1.25"-->
-<!--            android:background="@android:color/transparent"-->
-<!--            android:src="@drawable/ic_twitter"-->
-<!--            android:scaleType="fitCenter"-->
-<!--            android:padding="10dp"/>-->
-<!--        <ImageButton-->
-<!--            android:id="@+id/facebook_login_btn"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_weight="1.25"-->
-<!--            android:background="@android:color/transparent"-->
-<!--            android:src="@drawable/ic_facebook"-->
-<!--            android:scaleType="fitCenter"-->
-<!--            android:padding="10dp"/>-->
-
-<!--    </LinearLayout>-->
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

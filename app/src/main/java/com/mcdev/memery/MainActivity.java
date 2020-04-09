@@ -1,30 +1,45 @@
 package com.mcdev.memery;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.MediaController;
-import android.widget.Switch;
+import android.widget.Button;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.mcdev.memery.General.GetIntents;
 import com.mcdev.memery.General.StringConstants;
 
 public class MainActivity extends AppCompatActivity {
+    //init custom made GetIntents
+    GetIntents getIntents = new GetIntents();
 
     private static final String TAG = MainActivity.class.getSimpleName();
     LottieAnimationView loginLottieAnimationView;
     VideoView loginVideoView;
     FirebaseFirestore loginBackgroundFirestoreReference;
     private String backgroundFile;
+
+    //facebook Login
+    LoginButton facebookLoginButton;
+    CallbackManager facebookCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
         //init
         init();
 
+        //check if user is already logged in to facebook
+        isUserLoggedInToFacebook();
         //init firestore
         loginBackgroundFirestoreReference =  FirebaseFirestore.getInstance();
         loginBackgroundFirestoreReference.collection(StringConstants.LOGIN_BACKGROUND_COLLECTION).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -62,8 +79,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //listeners
+        listeners();
+    }
 
+    private void isUserLoggedInToFacebook() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+        if (isLoggedIn){
+            getIntents.goToHome(MainActivity.this);
+            MainActivity.this.finish();
+        }else{
+            //do nothing
+        }
 
+    }
+
+    private void listeners() {
+        //facebook login button
+        facebookCallbackManager = CallbackManager.Factory.create(); //creating facebook callback
+        facebookLoginButton.setPermissions("email", "public_profile");
+        facebookLoginButton.registerCallback(facebookCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "onSuccessFacebookLogin: " + loginResult);
+                Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                //go to home page
+                getIntents.goToHome(MainActivity.this);
+                MainActivity.this.finish();
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "onCancelFacebookLogin: " + "Log in cancelled");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "onErrorFacebookLogin: " + error.getMessage() + "\n caused by :" + error.getCause());
+            }
+        });
     }
 
     private void loadVideoVideo(String backgroundFile) {
@@ -107,5 +162,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         loginVideoView = findViewById(R.id.login_video_view);
+        facebookLoginButton = findViewById(R.id.facebook_login_btn);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }

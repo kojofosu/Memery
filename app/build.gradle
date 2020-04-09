@@ -48,5 +48,4 @@ dependencies {
     implementation 'com.twitter.sdk.android:twitter-core:3.1.1'
 
 
-
 }
