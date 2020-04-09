@@ -231,10 +231,48 @@ public class Login extends AppCompatActivity {
                             @Override
                             public void onSuccess(AuthResult authResult) {
                                 Log.d(TAG, "onSuccessFirebaseLogin: " + authResult);
-                                Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
-                                //go to home page
-                                getIntents.goToHome(Login.this);
-                                Login.this.finish();
+                                //checking to see if user is a new user or not so that it doesn't add the user details more than once
+                                if (authResult.getAdditionalUserInfo().isNewUser()){
+                                    Log.d(TAG, "new user logged in");
+                                    if (authResult.getUser() != null){
+                                        //creating the document to get the ID and add it as a field in the users collection
+                                        DocumentReference documentReference = firestoreReference.collection(StringConstants.USERS_COLLECTION).document();
+                                        String documentID = documentReference.getId();
+
+                                        //population user field
+                                        users.setUserName(authResult.getUser().getDisplayName());
+                                        users.setUserEmail(authResult.getUser().getEmail());
+                                        users.setUserId(authResult.getUser().getUid());
+                                        users.setUserPhoneNumber(authResult.getUser().getPhoneNumber());
+                                        users.setUserPhotoUrl(authResult.getUser().getPhotoUrl().toString());
+                                        users.setAccountCreation(authResult.getUser().getMetadata().getCreationTimestamp());
+                                        users.setLastLogIn(authResult.getUser().getMetadata().getLastSignInTimestamp());
+                                        users.setUserDocID(documentID);
+
+                                        //pushing users details to firestore
+                                        firestoreReference.collection(StringConstants.USERS_COLLECTION)
+                                                .document(documentID)
+                                                .set(users)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Log.d(TAG, "onSuccessFirestoreLogin: " + aVoid);
+                                                        //go to home page
+                                                        getIntents.goToHome(Login.this);
+                                                        Login.this.finish();
+                                                        Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    }
+
+                                }else {
+                                    Log.d(TAG, "old user logged in");
+                                    //go to home page
+                                    getIntents.goToHome(Login.this);
+                                    Login.this.finish();
+                                    Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                     @Override
