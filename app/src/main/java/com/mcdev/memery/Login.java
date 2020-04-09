@@ -25,6 +25,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -133,10 +134,28 @@ public class Login extends AppCompatActivity {
             @Override
             public void success(Result<TwitterSession> result) {
                 Log.d(TAG, "onSuccessTwitterLogin: " + result);
-                Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
-                //go to home page
-                getIntents.goToHome(Login.this);
-                Login.this.finish();
+                //saving user to firebase auth
+                TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
+                String token = result.data.getAuthToken().token;
+                String secret = result.data.getAuthToken().secret;
+                AuthCredential authCredential = TwitterAuthProvider.getCredential(token, secret);
+                firebaseAuth.signInWithCredential(authCredential)
+                        .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                            @Override
+                            public void onSuccess(AuthResult authResult) {
+                                Log.d(TAG, "onSuccessFirebaseLogin: " + authResult);
+                                Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                //go to home page
+                                getIntents.goToHome(Login.this);
+                                Login.this.finish();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailureFirebaseLogin: " + e.getMessage() + "\n caused by : " + e.getCause());
+                    }
+                });
+
             }
 
             @Override
@@ -163,7 +182,6 @@ public class Login extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "onSuccessFacebookLogin: " + loginResult);
-                Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
                 //saving user to firebase auth
                 AccessToken accessToken = loginResult.getAccessToken();
                 AuthCredential authCredential = FacebookAuthProvider.getCredential(accessToken.getToken());
