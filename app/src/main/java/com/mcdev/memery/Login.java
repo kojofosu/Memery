@@ -27,13 +27,14 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mcdev.memery.General.GetIntents;
 import com.mcdev.memery.General.StringConstants;
+import com.mcdev.memery.POJOS.Users;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
@@ -42,6 +43,8 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 public class Login extends AppCompatActivity {
     //init custom made GetIntents
     GetIntents getIntents = new GetIntents();
+    //init user class
+    Users users = new Users();
 
     private static final String TAG = Login.class.getSimpleName();
     LottieAnimationView loginLottieAnimationView;
@@ -49,7 +52,7 @@ public class Login extends AppCompatActivity {
     private String backgroundFile;
 
     //firebase
-    FirebaseFirestore loginBackgroundFirestoreReference;
+    FirebaseFirestore firestoreReference;
     FirebaseAuth firebaseAuth;
 
     //facebook Login
@@ -61,7 +64,7 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         //init
         init();
@@ -74,7 +77,7 @@ public class Login extends AppCompatActivity {
         //check if user is already logged in to twitter
         isUserLoggedIntoTwitter();
 
-        loginBackgroundFirestoreReference.collection(StringConstants.LOGIN_BACKGROUND_COLLECTION).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        firestoreReference.collection(StringConstants.LOGIN_BACKGROUND_COLLECTION).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if (queryDocumentSnapshots.isEmpty()){
@@ -107,14 +110,13 @@ public class Login extends AppCompatActivity {
 
     private void initFirebase() {
         //init firestore
-        loginBackgroundFirestoreReference =  FirebaseFirestore.getInstance();
+        firestoreReference =  FirebaseFirestore.getInstance();
         //init firebase authentication
         firebaseAuth = FirebaseAuth.getInstance();
     }
 
     private void isUserLoggedIntoTwitter() {
         TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
-//        TwitterAuthToken authToken = session.getAuthToken();
         boolean isLoggedIn = session != null;
 
         if (isLoggedIn){
@@ -144,10 +146,48 @@ public class Login extends AppCompatActivity {
                             @Override
                             public void onSuccess(AuthResult authResult) {
                                 Log.d(TAG, "onSuccessFirebaseLogin: " + authResult);
-                                Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
-                                //go to home page
-                                getIntents.goToHome(Login.this);
-                                Login.this.finish();
+                                //checking to see if user is a new user or not so that it doesn't add the user details more than once
+                                if (authResult.getAdditionalUserInfo().isNewUser()){
+                                    Log.d(TAG, "new user logged in");
+                                    if (authResult.getUser() != null){
+                                        //creating the document to get the ID and add it as a field in the users collection
+                                        DocumentReference documentReference = firestoreReference.collection(StringConstants.USERS_COLLECTION).document();
+                                        String documentID = documentReference.getId();
+
+                                        //population user field
+                                        users.setUserName(authResult.getUser().getDisplayName());
+                                        users.setUserEmail(authResult.getUser().getEmail());
+                                        users.setUserId(authResult.getUser().getUid());
+                                        users.setUserPhoneNumber(authResult.getUser().getPhoneNumber());
+                                        users.setUserPhotoUrl(authResult.getUser().getPhotoUrl().toString());
+                                        users.setAccountCreation(authResult.getUser().getMetadata().getCreationTimestamp());
+                                        users.setLastLogIn(authResult.getUser().getMetadata().getLastSignInTimestamp());
+                                        users.setUserDocID(documentID);
+
+                                        //pushing users details to firestore
+                                        firestoreReference.collection(StringConstants.USERS_COLLECTION)
+                                                .document(documentID)
+                                                .set(users)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Log.d(TAG, "onSuccessFirestoreLogin: " + aVoid);
+                                                        //go to home page
+                                                        getIntents.goToHome(Login.this);
+                                                        Login.this.finish();
+                                                        Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    }
+
+                                }else {
+                                    Log.d(TAG, "old user logged in");
+                                    //go to home page
+                                    getIntents.goToHome(Login.this);
+                                    Login.this.finish();
+                                    Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                     @Override
