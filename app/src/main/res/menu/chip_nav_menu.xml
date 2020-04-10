@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/memeries"
+        android:title="@string/memeries"
+        android:icon="@drawable/ic_slider"
+        />
+    <item
+        android:id="@+id/other"
+        android:title="other"
+        android:icon="@drawable/ic_twitter"
+        />
+    <item
+        android:id="@+id/me"
+        android:title="Me"
+        android:icon="@drawable/ic_user_2"
+        />
+
+
+</menu>

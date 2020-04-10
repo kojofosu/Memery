@@ -73,9 +73,11 @@ public class Login extends AppCompatActivity {
         initFirebase();
 
         //check if user is already logged in to facebook
-        isUserLoggedInToFacebook();
+//        isUserLoggedInToFacebook();
         //check if user is already logged in to twitter
-        isUserLoggedIntoTwitter();
+//        isUserLoggedIntoTwitter();
+        //check if user is already logged in to firebase
+        isUserLoggedIntoFirebase();
 
         firestoreReference.collection(StringConstants.LOGIN_BACKGROUND_COLLECTION).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -106,6 +108,14 @@ public class Login extends AppCompatActivity {
         //listeners
         facebookLoginStuff();
         twitterLoginStuff();
+    }
+
+    private void isUserLoggedIntoFirebase() {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null){
+            getIntents.goToHome(Login.this);
+            Login.this.finish();
+        }
+
     }
 
     private void initFirebase() {
