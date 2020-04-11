@@ -18,6 +18,9 @@ import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,6 +40,9 @@ import com.twitter.sdk.android.core.TwitterSession;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
+
+/*TODO
+ *  add custom progress bar for logging out*/
 public class ProfileFragment extends Fragment {
 
     private static final String TAG = ProfileFragment.class.getSimpleName();
@@ -82,7 +88,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private boolean isUserLoggedInWithTwitter(){
-        TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
+        TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();      //checking if user session is active
         return session != null;
     }
 
@@ -105,9 +111,15 @@ public class ProfileFragment extends Fragment {
                                         Log.d(TAG, "isUserLoggedInWithFacebook : " + isUserLoggedInWithFacebook());
                                         //then log user out of facebook
                                         FacebookSdk.fullyInitialize();      //initializing facebook SDK
-                                        LoginManager.getInstance().logOut();        //Log user out of facebook
-                                        firebaseAuth.signOut();     //log user out of firebase
-                                        SendUserToLoginActivity(view);      //send the user to login page
+                                        // remove permissions and revoke access for user to be able to login again with another account if they choose
+                                        new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, new GraphRequest.Callback() {
+                                            @Override
+                                            public void onCompleted(GraphResponse response) {
+                                                LoginManager.getInstance().logOut();        //Log user out of facebook
+                                                firebaseAuth.signOut();     //log user out of firebase
+                                                SendUserToLoginActivity(view);      //send the user to login page
+                                            }
+                                        }).executeAsync();      //execute permission deletion
                                     }else if (isUserLoggedInWithTwitter()){
                                         Log.d(TAG, "isUserLoggedInWithTwitter : " + isUserLoggedInWithTwitter());
                                         //then log user out of twitter

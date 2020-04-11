@@ -6,20 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Home">
 
-    <TextView
-        android:id="@+id/hello"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="logout fb"
-        android:textSize="50sp"/>
-    <TextView
-        android:id="@+id/hi"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="logout twitter"
-        android:textSize="50sp"
-        app:layout_constraintTop_toBottomOf="@+id/hello"/>
-
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"

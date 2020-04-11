@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.MediaActionSound;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,6 +41,8 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
+/*TODO
+*  add custom progress bar when logging in*/
 public class Login extends AppCompatActivity {
     //init custom made GetIntents
     GetIntents getIntents = new GetIntents();
@@ -90,12 +93,17 @@ public class Login extends AppCompatActivity {
                         switch (documentChange.getType()){
                             case ADDED:
                                 //getting the string value for the background file
-                                backgroundFile = documentChange.getDocument().getString("file");
-                                Log.d(TAG, "login background value : " + backgroundFile);
+                                String backgroundFile = documentChange.getDocument().getString("file");
+                                Log.d(TAG, "login background video file (added) : " + backgroundFile);
                                 //load video on video view
                                 loadVideoVideo(backgroundFile);
                                 break;
                             case MODIFIED:
+                                //getting the string value for the background file
+                                backgroundFile = documentChange.getDocument().getString("file");
+                                Log.d(TAG, "login background video file (modified) : " + backgroundFile);
+                                //load video on video view
+                                loadVideoVideo(backgroundFile);
                             case REMOVED:
                                 break;
                         }
@@ -306,13 +314,13 @@ public class Login extends AppCompatActivity {
     }
 
     private void loadVideoVideo(String backgroundFile) {
-        Log.d(TAG, "new log " + backgroundFile);
+        Log.d(TAG, "backgroundVideo " + backgroundFile);
         loginVideoView.setVideoPath(backgroundFile);        //setting video path
         loginVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
-                //setting looping to true
-                mediaPlayer.setLooping(true);
+                mediaPlayer.setLooping(true);       //setting looping to true
+                setVolume(0, mediaPlayer);      //mute audio
                 //Get your video's width and height
                 int videoWidth = mediaPlayer.getVideoWidth();
                 int videoHeight = mediaPlayer.getVideoHeight();
@@ -343,6 +351,13 @@ public class Login extends AppCompatActivity {
         loginVideoView.start(); //start playing video
     }
 
+    private void setVolume(int amount, MediaPlayer mediaPlayer) {
+        final int max = 100;
+        final double numerator = max - amount > 0 ? Math.log(max - amount) : 0;
+        final float volume = (float) (1 - (numerator / Math.log(max)));
+
+        mediaPlayer.setVolume(volume, volume);
+    }
 
     private void init() {
         loginVideoView = findViewById(R.id.login_video_view);

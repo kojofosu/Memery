@@ -18,40 +18,26 @@ import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterCore;
 
 public class Home extends AppCompatActivity {
-    TextView fblog, twlog;
-    GetIntents getIntents = new GetIntents();
-
     ChipNavigationBar chipNavigationBar;
-    FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Window w = getWindow();
-        w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        fblog = findViewById(R.id.hello);
-        FacebookSdk.fullyInitialize();
-        fblog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LoginManager.getInstance().logOut();
-                getIntents.goToLogin(Home.this);
-                Home.this.finish();
-            }
-        });
 
-        twlog = findViewById(R.id.hi);
-        Twitter.getInstance();
-        twlog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TwitterCore.getInstance().getSessionManager().clearActiveSession();
-                getIntents.goToLogin(Home.this);
-                Home.this.finish();
-            }
-        });
+        //init
+        init();
 
-        chipNavigationBar = findViewById(R.id.chip_bottom_nav);
+        //setting windows to fullscreen
+        setWindowFullScreen();
+
+        //listeners
+        chipNavigationListener();
+
+    }
+
+    private void chipNavigationListener() {
+        //when an item is on the chip navigation bar is cliced
         chipNavigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
             @Override
             public void onItemSelected(int i) {
@@ -73,5 +59,14 @@ public class Home extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setWindowFullScreen() {
+        Window w = getWindow();
+        w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    }
+
+    private void init() {
+        chipNavigationBar = findViewById(R.id.chip_bottom_nav);
     }
 }
