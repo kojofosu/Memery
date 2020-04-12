@@ -208,17 +208,6 @@ public class ProfileFragment extends Fragment {
                 });
             }
         });
-//        firebaseFirestore.collection("samplePic").document("123").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//            @Override
-//            public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                if (!documentSnapshot.exists()){
-//                    Log.d(TAG, "login background empty");
-//                }else {
-//                    final String imgUrl = documentSnapshot.get("imageUrl").toString();
-//
-//                }
-//            }
-//        });
 
     }
 
