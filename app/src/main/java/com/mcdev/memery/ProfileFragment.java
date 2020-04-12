@@ -70,6 +70,8 @@ public class ProfileFragment extends Fragment {
         //init
         init(view);
 
+
+
         //init Firebase stuff
         initFirebaseStuff();
 
@@ -151,42 +153,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void getUserInfo() {
-        //getting user image
-        picasso = Picasso.get();
-        firebaseFirestore.collection("samplePic").document("123").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (!documentSnapshot.exists()){
-                    Log.d(TAG, "login background empty");
-                }else {
-                    final String imgUrl = documentSnapshot.get("imageUrl").toString();
-                    Log.d(TAG, "imgUrl " + imgUrl);
-                    picasso.load(imgUrl).networkPolicy(NetworkPolicy.OFFLINE).into(profileImageView, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            picasso.load(imgUrl).into(profileBlurImageView);
-                            profileBlurImageView.setBlur(20);
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            picasso.load(imgUrl).into(profileImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    picasso.load(imgUrl).into(profileBlurImageView);
-                                    profileBlurImageView.setBlur(20);
-                                }
-
-                                @Override
-                                public void onError(Exception e) {
-
-                                }
-                            });
-                        }
-                    });
-                }
-            }
-        });
 
         //getting user info
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -194,7 +160,16 @@ public class ProfileFragment extends Fragment {
             String username = firebaseUser.getDisplayName();
             String userEmail = firebaseUser.getEmail();
             String userPhone = firebaseUser.getPhoneNumber();
-            String userPhotoUrl = firebaseUser.getPhotoUrl().toString();
+            //checking to see if user is logged in with facebook or twitter so i can handle the profile images well to display in HD
+            if (isUserLoggedInWithFacebook()){
+                String userPhotoUrl = firebaseUser.getPhotoUrl().toString() + "?height=500";        //getting the HD version of user facebook profile image
+                loadUserProfileImage(userPhotoUrl);     //loading the user's profile image
+            }else if (isUserLoggedInWithTwitter()){
+                String userPhotoUrl = firebaseUser.getPhotoUrl().toString().replace("_normal", "") ;        //getting the HD version of user twitter profile image
+                loadUserProfileImage(userPhotoUrl);     //loading the user's profile image
+            }
+
+
 
             profileUsernameTV.setText(username);    //setting user name text
             //checking to see if user email is null, then it assigns phone number..but if both are null set visibility to GONE
@@ -204,6 +179,47 @@ public class ProfileFragment extends Fragment {
                 profileUserEmailTV.setVisibility(View.GONE);
             }
         }
+    }
+
+    private void loadUserProfileImage(final String userPhotoUrl) {
+        //getting user image
+        picasso = Picasso.get();
+        Log.d(TAG, "imgUrl " + userPhotoUrl);
+        picasso.load(userPhotoUrl).networkPolicy(NetworkPolicy.OFFLINE).into(profileImageView, new Callback() {
+            @Override
+            public void onSuccess() {
+                picasso.load(userPhotoUrl).into(profileBlurImageView);
+                profileBlurImageView.setBlur(20);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                picasso.load(userPhotoUrl).into(profileImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        picasso.load(userPhotoUrl).into(profileBlurImageView);
+                        profileBlurImageView.setBlur(20);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+                });
+            }
+        });
+//        firebaseFirestore.collection("samplePic").document("123").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//            @Override
+//            public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                if (!documentSnapshot.exists()){
+//                    Log.d(TAG, "login background empty");
+//                }else {
+//                    final String imgUrl = documentSnapshot.get("imageUrl").toString();
+//
+//                }
+//            }
+//        });
+
     }
 
     private void initFirebaseStuff() {
