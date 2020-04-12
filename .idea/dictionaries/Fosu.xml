@@ -2,6 +2,7 @@
   <dictionary name="Fosu">
     <words>
       <w>firestore</w>
+      <w>swipeable</w>
     </words>
   </dictionary>
 </component>

@@ -2,7 +2,6 @@ package com.mcdev.memery;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
@@ -13,7 +12,7 @@ import com.mcdev.memery.Adapters.ViewpagerAdapter;
 
 public class Home extends AppCompatActivity {
     ChipNavigationBar chipNavigationBar;
-    ViewPager viewPager;
+    NonSwipeableViewpager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,19 +47,18 @@ public class Home extends AppCompatActivity {
             public void onItemSelected(int i) {
                 if (i == R.id.memeries){
                     viewPager.setCurrentItem(0);        //setting current page to position 0
-                    chipNavigationBar.setItemEnabled(R.id.memeries, true);
-                    chipNavigationBar.getSelectedItemId();
+//                    chipNavigationBar.setItemEnabled(R.id.memeries, true);
+//                    chipNavigationBar.getSelectedItemId();
 
                 }
                 if (i == R.id.other){
                     viewPager.setCurrentItem(1);        //setting current page to position 1
-                    chipNavigationBar.setItemSelected(R.id.other,true);
+//                    chipNavigationBar.setItemSelected(R.id.other,true);
 
                 }
                 if (i == R.id.me){
                     viewPager.setCurrentItem(2);        //setting current page to position 2
-                    chipNavigationBar.setItemEnabled(R.id.me, true);
-
+//                    chipNavigationBar.setItemEnabled(R.id.me, true);
                 }
             }
         });

@@ -1,7 +1,6 @@
 package com.mcdev.memery;
 
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -11,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,23 +20,19 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.jgabrielfreitas.core.BlurImageView;
 import com.mcdev.memery.General.GetIntents;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
-import com.twitter.sdk.android.core.Twitter;
-import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
+import java.util.Objects;
 
 
 /*TODO
@@ -54,8 +48,9 @@ public class ProfileFragment extends Fragment {
     private  Picasso picasso;
     //Firebase
     private FirebaseFirestore firebaseFirestore;
-    FirebaseAuth firebaseAuth;
+    private FirebaseAuth firebaseAuth;
 
+    ChipNavigationBar chipNavigationBar;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -70,7 +65,7 @@ public class ProfileFragment extends Fragment {
         //init
         init(view);
 
-
+chipNavigationBar.setItemEnabled(R.id.me, true);
 
         //init Firebase stuff
         initFirebaseStuff();
@@ -212,8 +207,8 @@ public class ProfileFragment extends Fragment {
     }
 
     private void initFirebaseStuff() {
-        firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseFirestore = FirebaseFirestore.getInstance();        //initializing firebase firestore
+        firebaseAuth = FirebaseAuth.getInstance();      //initializing firebase auth
     }
 
     private void init(View view) {
@@ -222,5 +217,7 @@ public class ProfileFragment extends Fragment {
         profileUsernameTV = view.findViewById(R.id.profile_user_name);
         profileUserEmailTV = view.findViewById(R.id.profile_user_email);
         profileLogoutImageButton = view.findViewById(R.id.profile_logout_image_button);
+
+        chipNavigationBar = Objects.requireNonNull(getActivity()).findViewById(R.id.chip_bottom_nav);
     }
 }
