@@ -105,15 +105,15 @@ public class SaveFragment extends Fragment {
                 String tweetType = result.data.extendedEntities.media.get(0).type;      //The tweet type
 
 
-                String url;     //file url
+//                String url;     //file url
                 Log.d("TAG", "tweet type is : " + result.data.extendedEntities.media.get(0).type);
 
                 /*Checking if file is video or an animated gif*/
                 if ((tweetType).equals("video")) {
                     String filename = "memery_vid" + id + ".mp4";      //set file name
                     String mimeType = "video/*";
-                    url = result.data.extendedEntities.media.get(0).videoInfo.variants.get(i).url;
-
+                    String url = result.data.extendedEntities.media.get(0).videoInfo.variants.get(i).url;
+                    Log.d("TAG", "url is " + url);
                     final String getUrl = url;
                     final String getfileName = filename;
                     final String getMimeType = mimeType;
@@ -143,10 +143,47 @@ public class SaveFragment extends Fragment {
                         }
                     });
                 }else if ((tweetType).equals("animated_gif")){
-                    String filename = "memery_gif" + id + ".gif";      //set file name
-                    url = result.data.extendedEntities.media.get(0).videoInfo.variants.get(i).url;
+                    String filename = "memery_gif" + id + ".mp4";      //set file name with extension ".mp4" because setting it to .gif gave me issues and also because the url file was .mp4
+                        String url = result.data.extendedEntities.media.get(0).videoInfo.variants.get(i).url;
+                        Log.d("TAG", "url is " + url);
 
-                    downloadVideo(url,filename, null);        //download video
+                    while (url.endsWith(".gif")){
+                        if(result.data.extendedEntities.media.get(0).videoInfo.variants.get(i)!=null) {
+                            url = result.data.extendedEntities.media.get(0).videoInfo.variants.get(i).url;
+                            i += 1;
+                        }
+                    }
+
+                    String mimeType = "image/gif";    //mime type for gifs is "image/gif"
+
+                    final String getUrl = url;
+                    final String getfileName = filename;
+                    final String getMimeType = mimeType;
+                    downloadLottieAnimationView.addAnimatorListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            /*Below codes didn't get called for reasons i do not know*/
+                            //Toast.makeText(getContext(), "Fetching...", Toast.LENGTH_SHORT).show();
+                            //progressTextView.setText("Fetching...");
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            progressTextView.setText("Download started. check notification");
+                            downloadVideo(getUrl,getfileName, getMimeType);        //download video
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
                 }
 
 //                int i=0;
@@ -177,7 +214,7 @@ public class SaveFragment extends Fragment {
         }
         String downloadDestination = String.valueOf(dir);       //getting the string equivalent of the path to be passed to rxDownloader
         Log.d("TAG", "downloadDestination : " + downloadDestination);
-        RxDownloader rxDownloader = new RxDownloader(getContext());
+        final RxDownloader rxDownloader = new RxDownloader(getContext());     //init RxDownloader
         rxDownloader.download(url, filename, downloadDestination, mimeType, true)
         .subscribe(new Observer<String>() {
             @Override
@@ -198,6 +235,8 @@ public class SaveFragment extends Fragment {
             @Override
             public void onComplete() {
                 Log.d("TAG", "subscribe onComplete " );         //download complete
+                tweetUrlET.setText("");     //clearing the url from the edit text when download is complete
+
             }
         });
 
