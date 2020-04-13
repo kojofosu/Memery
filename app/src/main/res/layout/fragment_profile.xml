@@ -30,7 +30,7 @@
                 app:cardCornerRadius="30dp"
                 app:cardUseCompatPadding="false"
                 app:cardPreventCornerOverlap="false"
-                app:cardElevation="25dp"
+                app:cardElevation="28dp"
                 android:elevation="50dp">
 
                 <ImageView

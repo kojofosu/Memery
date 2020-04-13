@@ -23,7 +23,6 @@ import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.jgabrielfreitas.core.BlurImageView;
 import com.mcdev.memery.General.GetIntents;
 import com.squareup.picasso.Callback;
@@ -32,7 +31,7 @@ import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
 
-import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 
 /*TODO
@@ -50,8 +49,6 @@ public class ProfileFragment extends Fragment {
     private FirebaseFirestore firebaseFirestore;
     private FirebaseAuth firebaseAuth;
 
-    ChipNavigationBar chipNavigationBar;
-
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -64,8 +61,6 @@ public class ProfileFragment extends Fragment {
 
         //init
         init(view);
-
-chipNavigationBar.setItemEnabled(R.id.me, true);
 
         //init Firebase stuff
         initFirebaseStuff();
@@ -184,7 +179,7 @@ chipNavigationBar.setItemEnabled(R.id.me, true);
             @Override
             public void onSuccess() {
                 picasso.load(userPhotoUrl).into(profileBlurImageView);
-                profileBlurImageView.setBlur(20);
+                profileBlurImageView.setBlur(7);
             }
 
             @Override
@@ -193,7 +188,7 @@ chipNavigationBar.setItemEnabled(R.id.me, true);
                     @Override
                     public void onSuccess() {
                         picasso.load(userPhotoUrl).into(profileBlurImageView);
-                        profileBlurImageView.setBlur(20);
+                        profileBlurImageView.setBlur(7);
                     }
 
                     @Override
@@ -211,13 +206,11 @@ chipNavigationBar.setItemEnabled(R.id.me, true);
         firebaseAuth = FirebaseAuth.getInstance();      //initializing firebase auth
     }
 
-    private void init(View view) {
+    private void init(@NotNull View view) {
         profileBlurImageView = view.findViewById(R.id.profile_blur_image_view);
         profileImageView = view.findViewById(R.id.profile_image_view);
         profileUsernameTV = view.findViewById(R.id.profile_user_name);
         profileUserEmailTV = view.findViewById(R.id.profile_user_email);
         profileLogoutImageButton = view.findViewById(R.id.profile_logout_image_button);
-
-        chipNavigationBar = Objects.requireNonNull(getActivity()).findViewById(R.id.chip_bottom_nav);
     }
 }

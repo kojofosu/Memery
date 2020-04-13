@@ -4,17 +4,17 @@
     <item
         android:id="@+id/memeries"
         android:title="@string/memeries"
-        android:icon="@drawable/ic_slider"
+        android:icon="@drawable/ic_quote"
         />
     <item
-        android:id="@+id/other"
-        android:title="other"
-        android:icon="@drawable/ic_twitter"
+        android:id="@+id/save"
+        android:title="@string/save"
+        android:icon="@drawable/ic_sinking"
         />
     <item
         android:id="@+id/me"
         android:title="Me"
-        android:icon="@drawable/ic_user_2"
+        android:icon="@drawable/ic_account"
         />
 
 

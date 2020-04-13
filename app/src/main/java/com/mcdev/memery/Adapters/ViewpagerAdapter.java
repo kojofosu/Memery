@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.mcdev.memery.HomeFragment;
-import com.mcdev.memery.OtherFragment;
+import com.mcdev.memery.SaveFragment;
 import com.mcdev.memery.ProfileFragment;
 
 
@@ -24,7 +24,7 @@ public class ViewpagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new HomeFragment();      //creating instance of Home Fragment
             case 1:
-                return new OtherFragment();     //creating instance of Other Fragment
+                return new SaveFragment();     //creating instance of Other Fragment
             case 2:
                 return new ProfileFragment();       //creating instance of Profile Fragment
         }

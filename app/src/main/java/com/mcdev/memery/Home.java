@@ -51,7 +51,7 @@ public class Home extends AppCompatActivity {
 //                    chipNavigationBar.getSelectedItemId();
 
                 }
-                if (i == R.id.other){
+                if (i == R.id.save){
                     viewPager.setCurrentItem(1);        //setting current page to position 1
 //                    chipNavigationBar.setItemSelected(R.id.other,true);
 
