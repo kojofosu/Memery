@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 
+import com.andrognito.flashbar.Flashbar;
 import com.esafirm.rxdownloader.RxDownloader;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -49,6 +50,7 @@ public class SaveFragment extends Fragment {
 //    private Button downloadTweetBtn;
     private LottieAnimationView downloadLottieAnimationView;
     private TextView progressTextView;
+    Flashbar progressFlashBar;
 
     public SaveFragment() {
         // Required empty public constructor
@@ -127,9 +129,19 @@ public class SaveFragment extends Fragment {
 
                         @Override
                         public void onAnimationEnd(Animator animator) {
-                            progressTextView.setText("Download started. check notification");
-                            downloadVideo(getUrl,getfileName, getMimeType);        //download video
+//                            progressTextView.setText("Download started. check notification");
 
+                            progressFlashBar = new Flashbar.Builder(getActivity())
+                                    .gravity(Flashbar.Gravity.TOP)
+                                    .title("Downloading...")
+                                    .message(getfileName)
+                                    .showProgress(Flashbar.ProgressPosition.LEFT)
+                                    //.duration(Flashbar.DURATION_INDEFINITE)       //commented this because it will crash...to make duration indefinite, don't call duration()
+                                    .enableSwipeToDismiss()
+                                    .backgroundDrawable(R.drawable.flash_bar_gradient)
+                                    .build();
+                            progressFlashBar.show();
+                            downloadVideo(getUrl,getfileName, getMimeType, progressFlashBar);        //download video
                         }
 
                         @Override
@@ -169,8 +181,18 @@ public class SaveFragment extends Fragment {
 
                         @Override
                         public void onAnimationEnd(Animator animator) {
-                            progressTextView.setText("Download started. check notification");
-                            downloadVideo(getUrl,getfileName, getMimeType);        //download video
+//                            progressTextView.setText("Download started. check notification");
+                            progressFlashBar = new Flashbar.Builder(getActivity())
+                                    .gravity(Flashbar.Gravity.TOP)
+                                    .title("Downloading...")
+                                    .message(getfileName)
+                                    .showProgress(Flashbar.ProgressPosition.LEFT)
+                                    //.duration(Flashbar.DURATION_INDEFINITE)       //commented this because it will crash...to make duration indefinite, don't call duration()
+                                    .enableSwipeToDismiss()
+                                    .backgroundDrawable(R.drawable.flash_bar_gradient)
+                                    .build();
+                            progressFlashBar.show();
+                            downloadVideo(getUrl,getfileName, getMimeType, progressFlashBar);        //download video
 
                         }
 
@@ -186,15 +208,6 @@ public class SaveFragment extends Fragment {
                     });
                 }
 
-//                int i=0;
-//                url = result.data.extendedEntities.media.get(0).videoInfo.variants.get(i).url;
-//                while (!url.endsWith(".mp4")){
-////                    if(result.data.extendedEntities.media.get(0).videoInfo.variants.get(i)!=null) {
-//                        url = result.data.extendedEntities.media.get(0).videoInfo.variants.get(i).url;
-//                        i += 1;
-////                    }
-//                }
-
 
             }
 
@@ -207,7 +220,7 @@ public class SaveFragment extends Fragment {
     }
 
     /*download video*/
-    private void downloadVideo(String url, final String filename, @Nullable String mimeType) {
+    private void downloadVideo(String url, final String filename, @Nullable String mimeType, final Flashbar progressFlashBar) {
         File dir = new File(Environment.DIRECTORY_DOWNLOADS + "/Memeries");     //creating memeries custom directory
         if (!dir.exists()) {
             dir.mkdirs();       // creates needed dirs
@@ -236,6 +249,16 @@ public class SaveFragment extends Fragment {
             public void onComplete() {
                 Log.d("TAG", "subscribe onComplete " );         //download complete
                 tweetUrlET.setText("");     //clearing the url from the edit text when download is complete
+                progressFlashBar.dismiss();
+                Flashbar flashbar = new Flashbar.Builder(getActivity())
+                        .gravity(Flashbar.Gravity.TOP)
+                        .message("Download complete")
+                        .duration(5000)
+                        .enableSwipeToDismiss()
+                        .backgroundDrawable(R.drawable.flash_bar_gradient)
+                        .vibrateOn(Flashbar.Vibration.SHOW, Flashbar.Vibration.DISMISS)
+                        .build();
+                flashbar.show();
 
             }
         });
