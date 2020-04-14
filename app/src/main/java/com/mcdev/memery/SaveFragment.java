@@ -131,6 +131,7 @@ public class SaveFragment extends Fragment {
                         public void onAnimationEnd(Animator animator) {
 //                            progressTextView.setText("Download started. check notification");
 
+
                             progressFlashBar = new Flashbar.Builder(getActivity())
                                     .gravity(Flashbar.Gravity.TOP)
                                     .title("Downloading...")
