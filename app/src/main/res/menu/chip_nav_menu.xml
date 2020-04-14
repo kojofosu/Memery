@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/memeries"
         android:title="@string/memeries"
         android:icon="@drawable/ic_quote"
+        app:cnb_disabledColor="#474646"
         />
     <item
         android:id="@+id/save"
