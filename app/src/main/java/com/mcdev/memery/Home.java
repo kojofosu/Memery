@@ -36,6 +36,10 @@ public class Home extends AppCompatActivity {
         //listeners
         chipNavigationListener();
 
+        //enabling home fragment chip button by default when app is launched
+        chipNavigationBar.setItemSelected(R.id.memeries, true);
+        isChipItemSelected(R.id.memeries);
+
     }
 
     private void isChipItemSelected(final int getSelectedItemId) {

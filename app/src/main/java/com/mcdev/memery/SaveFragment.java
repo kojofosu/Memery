@@ -2,11 +2,13 @@ package com.mcdev.memery;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 
 import com.andrognito.flashbar.Flashbar;
+
 import com.esafirm.rxdownloader.RxDownloader;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -33,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.security.spec.EncodedKeySpec;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -45,6 +49,7 @@ import retrofit2.Call;
  * A simple {@link Fragment} subclass.
  */
 public class SaveFragment extends Fragment {
+    private final static String TAG = SaveFragment.class.getSimpleName();
 
     private EditText tweetUrlET;
 //    private Button downloadTweetBtn;
@@ -65,6 +70,7 @@ public class SaveFragment extends Fragment {
 
         //init
         init(view);
+
 
         //listeners
         downloadLottieAnimationView.setOnClickListener(new View.OnClickListener() {
@@ -129,9 +135,7 @@ public class SaveFragment extends Fragment {
 
                         @Override
                         public void onAnimationEnd(Animator animator) {
-//                            progressTextView.setText("Download started. check notification");
-
-
+                            progressTextView.setText("");
                             progressFlashBar = new Flashbar.Builder(getActivity())
                                     .gravity(Flashbar.Gravity.TOP)
                                     .title("Downloading...")
@@ -142,7 +146,7 @@ public class SaveFragment extends Fragment {
                                     .backgroundDrawable(R.drawable.flash_bar_gradient)
                                     .build();
                             progressFlashBar.show();
-                            downloadVideo(getUrl,getfileName, getMimeType, progressFlashBar);        //download video
+                            downloadVideo(getUrl,getfileName, getMimeType);        //download video
                         }
 
                         @Override
@@ -182,7 +186,7 @@ public class SaveFragment extends Fragment {
 
                         @Override
                         public void onAnimationEnd(Animator animator) {
-//                            progressTextView.setText("Download started. check notification");
+                            progressTextView.setText("");
                             progressFlashBar = new Flashbar.Builder(getActivity())
                                     .gravity(Flashbar.Gravity.TOP)
                                     .title("Downloading...")
@@ -193,7 +197,7 @@ public class SaveFragment extends Fragment {
                                     .backgroundDrawable(R.drawable.flash_bar_gradient)
                                     .build();
                             progressFlashBar.show();
-                            downloadVideo(getUrl,getfileName, getMimeType, progressFlashBar);        //download video
+                            downloadVideo(getUrl,getfileName, getMimeType);        //download video
 
                         }
 
@@ -221,18 +225,21 @@ public class SaveFragment extends Fragment {
     }
 
     /*download video*/
-    private void downloadVideo(String url, final String filename, @Nullable String mimeType, final Flashbar progressFlashBar) {
+    private void downloadVideo(String url, final String filename, @Nullable String mimeType) {
         File dir = new File(Environment.DIRECTORY_DOWNLOADS + "/Memeries");     //creating memeries custom directory
         if (!dir.exists()) {
             dir.mkdirs();       // creates needed dirs
         }
         String downloadDestination = String.valueOf(dir);       //getting the string equivalent of the path to be passed to rxDownloader
         Log.d("TAG", "downloadDestination : " + downloadDestination);
+
+
+
         final RxDownloader rxDownloader = new RxDownloader(getContext());     //init RxDownloader
         rxDownloader.download(url, filename, downloadDestination, mimeType, true)
         .subscribe(new Observer<String>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(Disposable d) { ;
                 Log.d("TAG", "subscribe onSubscribe " + d.isDisposed());        //returns true if subscriber is disposed
             }
 
@@ -261,6 +268,23 @@ public class SaveFragment extends Fragment {
                         .build();
                 flashbar.show();
 
+                //timer to refresh page to unregister from the downloader {This is temporary}
+                final int interval = 6000;      // 1 Second before the item enables again for user to be able to click
+                Handler handler = new Handler();
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        Intent intent = getActivity().getIntent();
+                        getActivity().overridePendingTransition(0, 0);
+                        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        getActivity().finish();
+                        getActivity().overridePendingTransition(0, 0);
+                        startActivity(intent);
+                    }
+                };
+                handler.postAtTime(runnable, System.currentTimeMillis() + interval);        //chip enabler handler
+                handler.postDelayed(runnable, interval);
             }
         });
 
@@ -281,7 +305,7 @@ public class SaveFragment extends Fragment {
             String id = split[5].split("\\?")[0];
             return Long.parseLong(id);
         }catch (Exception e){
-            Log.d("TAG", "getTweetId: "+e.getLocalizedMessage());
+            Log.d("TAG", "getTweetId: " + e.getLocalizedMessage());
 //            alertNoUrl();
             return null;
         }

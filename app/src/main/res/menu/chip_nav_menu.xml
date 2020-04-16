@@ -6,8 +6,7 @@
         android:id="@+id/memeries"
         android:title="@string/memeries"
         android:icon="@drawable/ic_quote"
-        app:cnb_disabledColor="#474646"
-        />
+        app:cnb_iconColor="#A53C3C"/>
     <item
         android:id="@+id/save"
         android:title="@string/save"
