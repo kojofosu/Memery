@@ -5,15 +5,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.media.MediaActionSound;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -41,6 +41,8 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
+import java.util.Objects;
+
 /*TODO
 *  add custom progress bar when logging in*/
 public class Login extends AppCompatActivity {
@@ -50,9 +52,7 @@ public class Login extends AppCompatActivity {
     Users users = new Users();
 
     private static final String TAG = Login.class.getSimpleName();
-    LottieAnimationView loginLottieAnimationView;
     VideoView loginVideoView;
-    private String backgroundFile;
 
     //firebase
     FirebaseFirestore firestoreReference;
@@ -75,11 +75,10 @@ public class Login extends AppCompatActivity {
         //init firebase stuff
         initFirebase();
 
-        //check if user is already logged in to facebook
-//        isUserLoggedInToFacebook();
-        //check if user is already logged in to twitter
-//        isUserLoggedIntoTwitter();
-        //check if user is already logged in to firebase
+        //making activity fullscreen
+        setWindowFullScreen();
+
+
         isUserLoggedIntoFirebase();
 
         firestoreReference.collection(StringConstants.LOGIN_BACKGROUND_COLLECTION).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -118,6 +117,11 @@ public class Login extends AppCompatActivity {
         twitterLoginStuff();
     }
 
+    private void setWindowFullScreen() {
+        Window window = getWindow();        //initializing window
+        window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    }
+
     private void isUserLoggedIntoFirebase() {
         if (FirebaseAuth.getInstance().getCurrentUser() != null){
             getIntents.goToHome(Login.this);
@@ -133,20 +137,6 @@ public class Login extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
     }
 
-    private void isUserLoggedIntoTwitter() {
-        TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
-        boolean isLoggedIn = session != null;
-
-        if (isLoggedIn){
-            getIntents.goToHome(Login.this);
-            Login.this.finish();
-        }
-
-        //NOTE : if you want to get token and secret too use uncomment the below code
-        /*TwitterAuthToken authToken = session.getAuthToken();
-        String token = authToken.token;
-        String secret = authToken.secret;*/
-    }
 
     private void twitterLoginStuff() {
         //twitter login button
@@ -165,7 +155,7 @@ public class Login extends AppCompatActivity {
                             public void onSuccess(AuthResult authResult) {
                                 Log.d(TAG, "onSuccessFirebaseLogin: " + authResult);
                                 //checking to see if user is a new user or not so that it doesn't add the user details more than once
-                                if (authResult.getAdditionalUserInfo().isNewUser()){
+                                if (Objects.requireNonNull(authResult.getAdditionalUserInfo()).isNewUser()){
                                     Log.d(TAG, "new user logged in");
                                     if (authResult.getUser() != null){
                                         //creating the document to get the ID and add it as a field in the users collection
@@ -221,15 +211,6 @@ public class Login extends AppCompatActivity {
                 Log.d(TAG, "onErrorTwitterLogin: " + exception.getMessage() + "\n caused by :" + exception.getCause());
             }
         });
-    }
-
-    private void isUserLoggedInToFacebook() {
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-        if (isLoggedIn){
-            getIntents.goToHome(Login.this);
-            Login.this.finish();
-        }
     }
 
     private void facebookLoginStuff() {

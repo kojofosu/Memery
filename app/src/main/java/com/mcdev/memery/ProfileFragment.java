@@ -1,9 +1,7 @@
 package com.mcdev.memery;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -15,16 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
-import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.jgabrielfreitas.core.BlurImageView;
-import com.mcdev.memery.General.GetIntents;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -45,9 +36,6 @@ public class ProfileFragment extends Fragment {
     private ImageButton profileLogoutImageButton;
     //Picasso
     private  Picasso picasso;
-    //Firebase
-    private FirebaseFirestore firebaseFirestore;
-    private FirebaseAuth firebaseAuth;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -62,14 +50,11 @@ public class ProfileFragment extends Fragment {
         //init
         init(view);
 
-        //init Firebase stuff
-        initFirebaseStuff();
-
         //get user info
         getUserInfo();
 
         //listeners
-        logoutButtonListener(view);
+        logoutButtonListener();
 
         return view;
     }
@@ -81,66 +66,26 @@ public class ProfileFragment extends Fragment {
 
     private boolean isUserLoggedInWithTwitter(){
         TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();      //checking if user session is active
+        //NOTE : if you want to get token and secret too use uncomment the below code
+        /*TwitterAuthToken authToken = session.getAuthToken();
+        String token = authToken.token;
+        String secret = authToken.secret;*/
         return session != null;
     }
 
-    private void logoutButtonListener(final View getView) {
+    private void logoutButtonListener() {
         profileLogoutImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                //create an alert dialog for user to confirm if they want to really logout
-                final AlertDialog.Builder builder;
-
-                builder = new AlertDialog.Builder(getView.getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
-                builder.setTitle("Logout?")
-                        .setMessage("Are you sure you want to logout?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // continue with logout
-                                try {
-                                    //checking to see if user is logged in with twitter or facebook
-                                    if (isUserLoggedInWithFacebook()){
-                                        Log.d(TAG, "isUserLoggedInWithFacebook : " + isUserLoggedInWithFacebook());
-                                        //then log user out of facebook
-                                        FacebookSdk.fullyInitialize();      //initializing facebook SDK
-                                        // remove permissions and revoke access for user to be able to login again with another account if they choose
-                                        new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, new GraphRequest.Callback() {
-                                            @Override
-                                            public void onCompleted(GraphResponse response) {
-                                                LoginManager.getInstance().logOut();        //Log user out of facebook
-                                                firebaseAuth.signOut();     //log user out of firebase
-                                                SendUserToLoginActivity(view);      //send the user to login page
-                                            }
-                                        }).executeAsync();      //execute permission deletion
-                                    }else if (isUserLoggedInWithTwitter()){
-                                        Log.d(TAG, "isUserLoggedInWithTwitter : " + isUserLoggedInWithTwitter());
-                                        //then log user out of twitter
-                                        TwitterCore.getInstance().getSessionManager().clearActiveSession();     //clearing current user session
-                                        firebaseAuth.signOut();     //log user out of firebase
-                                        SendUserToLoginActivity(view);      //send the user to login page
-                                    }
-
-                                }catch (Exception e){
-                                    e.printStackTrace();
-                                }
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
-                            }
-                        })
-                        //.setIcon(R.drawable.ic_bubble_chart_black_24dp)
-                        .show();
+                //inflating bottom sheet logout confirmation
+                LogoutBottomSheetFragment logoutBottomSheetFragment = new LogoutBottomSheetFragment();
+                if (getFragmentManager() != null) {
+                    logoutBottomSheetFragment.show(getFragmentManager(), logoutBottomSheetFragment.getTag());
+                }
             }
         });
     }
 
-    private void SendUserToLoginActivity(View view) {
-        GetIntents getIntents = new GetIntents();
-        getIntents.goToLogin(getActivity());
-        getActivity().finish();
-    }
 
     private void getUserInfo() {
 
@@ -199,11 +144,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-    }
-
-    private void initFirebaseStuff() {
-        firebaseFirestore = FirebaseFirestore.getInstance();        //initializing firebase firestore
-        firebaseAuth = FirebaseAuth.getInstance();      //initializing firebase auth
     }
 
     private void init(@NotNull View view) {

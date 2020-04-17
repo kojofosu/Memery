@@ -8,4 +8,6 @@
     <string name="user_email">user email</string>
     <string name="save">Save</string>
     <string name="enter_url">Enter URL</string>
+    <string name="log_out">Logout</string>
+    <string name="cancel">Cancel</string>
 </resources>

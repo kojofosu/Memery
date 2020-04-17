@@ -1,7 +1,6 @@
 package com.mcdev.memery;
 
 import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,7 +8,6 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +16,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.LayoutMode;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.MaterialDialogKt;
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet;
+import com.afollestad.materialdialogs.callbacks.DialogCallbackExtKt;
+import com.afollestad.materialdialogs.internal.main.DialogLayout;
 import com.airbnb.lottie.LottieAnimationView;
 
 import com.andrognito.flashbar.Flashbar;
@@ -35,11 +39,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.security.spec.EncodedKeySpec;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import retrofit2.Call;
@@ -79,6 +78,8 @@ public class SaveFragment extends Fragment {
 
             tweetUrlET.setText(getURLFromActivity);
         }
+
+
 
 
         //listeners

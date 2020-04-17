@@ -10,6 +10,9 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.mcdev.memery.Adapters.ViewpagerAdapter;
 
@@ -59,7 +62,7 @@ public class Home extends AppCompatActivity {
                 //passing the url to the fragment
                 Bundle bundle = new Bundle();
                 bundle.putString("tweetURL", URL);
-                // set Fragmentclass Arguments
+                // set Fragment class Arguments
                 SaveFragment saveFragment = new SaveFragment();
                 saveFragment.setArguments(bundle);
             }
