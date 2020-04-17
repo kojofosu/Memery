@@ -75,6 +75,8 @@ public class Home extends AppCompatActivity {
 
     private void isChipItemSelected(final int getSelectedItemId) {
             Log.d(TAG, "chipNavigation bar isSelected : " + getSelectedItemId );
+            chipNavigationBar.setItemSelected(getSelectedItemId, true);      //selecting the item first before timer starts
+
             final int interval = 2000;      // 2 Seconds before the item disables {using disabled because isSelected doesn't work for reasons i do not know}
             Handler handler = new Handler();        // init handler
             Runnable runnable = new Runnable() {
