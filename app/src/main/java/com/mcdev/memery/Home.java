@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -31,14 +32,44 @@ public class Home extends AppCompatActivity {
         setWindowFullScreen();
 
         //init viewpager
-        initViewpager();
+//        initViewpager();
 
         //listeners
         chipNavigationListener();
 
         //enabling home fragment chip button by default when app is launched
-        chipNavigationBar.setItemSelected(R.id.memeries, true);
-        isChipItemSelected(R.id.memeries);
+//        chipNavigationBar.setItemSelected(R.id.memeries, true);
+//        isChipItemSelected(R.id.memeries);
+
+        //getting data from share
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+        if ("android.intent.action.SEND".equals(action) && type != null) {
+
+            if (type.equals("text/plain")){
+                String URL = intent.getStringExtra("android.intent.extra.TEXT");
+                initViewpager(URL);
+                viewPager.setCurrentItem(1);        //if its from a shareable content, launch the save fragment
+                isChipItemSelected(R.id.save);      //if its from a shareable content, select the save fragment's chip
+                Log.println(Log.ASSERT,"shareableTextExtra",URL);
+                Log.d(TAG, "action : " + action);
+                Log.d(TAG, "type : " + type);
+
+                //passing the url to the fragment
+                Bundle bundle = new Bundle();
+                bundle.putString("tweetURL", URL);
+                // set Fragmentclass Arguments
+                SaveFragment saveFragment = new SaveFragment();
+                saveFragment.setArguments(bundle);
+            }
+
+
+        }else{
+            initViewpager(null);
+            viewPager.setCurrentItem(0);        //if its not from a shareable content, launch the home fragment
+            isChipItemSelected(R.id.memeries);      //if its not from a shareable content, select the home fragment's chip
+        }
 
     }
 
@@ -66,11 +97,11 @@ public class Home extends AppCompatActivity {
             handler.postDelayed(runnable, interval);
     }
 
-    private void initViewpager() {
-        ViewpagerAdapter adapter = new ViewpagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);       //initializing the view pager
+    private void initViewpager(@Nullable String URL) {
+        ViewpagerAdapter adapter = new ViewpagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, URL);       //initializing the view pager
         viewPager.setAdapter(adapter);      //setting view pager's adapter with contents in the viewpager adapter class
         viewPager.setOffscreenPageLimit(3);     //increasing the limit for screens to lose cache to three
-        viewPager.setCurrentItem(0);        //setting default page to position 0
+//        viewPager.setCurrentItem(0);        //setting default page to position 0
     }
 
     private void chipNavigationListener() {
@@ -86,8 +117,6 @@ public class Home extends AppCompatActivity {
                 if (i == R.id.save){
                     viewPager.setCurrentItem(1);        //setting current page to position 1
                    isChipItemSelected(i);
-//                    chipNavigationBar.setItemSelected(R.id.other,true);
-
 
                 }
                 if (i == R.id.me){

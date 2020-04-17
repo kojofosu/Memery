@@ -71,6 +71,15 @@ public class SaveFragment extends Fragment {
         //init
         init(view);
 
+        if (getArguments() != null){
+            String getURLFromActivity = getArguments().getString("tweetURL");
+            if (getURLFromActivity != null) {
+                Log.println(Log.ASSERT,"getURLFromActivity", getURLFromActivity);
+            }
+
+            tweetUrlET.setText(getURLFromActivity);
+        }
+
 
         //listeners
         downloadLottieAnimationView.setOnClickListener(new View.OnClickListener() {

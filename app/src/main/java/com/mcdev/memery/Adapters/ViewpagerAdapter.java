@@ -1,5 +1,7 @@
 package com.mcdev.memery.Adapters;
 
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -12,9 +14,15 @@ import com.mcdev.memery.ProfileFragment;
 
 public class ViewpagerAdapter extends FragmentPagerAdapter {
 
+    private String url;
 
     public ViewpagerAdapter(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);
+    }
+
+    public ViewpagerAdapter(@NonNull FragmentManager fm, int behavior, String url) {
+        super(fm, behavior);
+        this.url = url;
     }
 
     @NonNull
@@ -24,7 +32,13 @@ public class ViewpagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new HomeFragment();      //creating instance of Home Fragment
             case 1:
-                return new SaveFragment();     //creating instance of Other Fragment
+//                return new SaveFragment();     //creating instance of Save Fragment
+                SaveFragment saveFragment = new SaveFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("tweetURL", url);
+                // set Fragmentclass Arguments
+                saveFragment.setArguments(bundle);
+                return saveFragment;
             case 2:
                 return new ProfileFragment();       //creating instance of Profile Fragment
         }
