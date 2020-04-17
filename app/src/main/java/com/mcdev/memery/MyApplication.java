@@ -12,6 +12,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        /*TWITTER*/
         TwitterConfig config = new TwitterConfig.Builder(this)
                 .logger(new DefaultLogger(Log.DEBUG))   //enables logging when app is in debug mode
                 .twitterAuthConfig(new TwitterAuthConfig(getResources().getString(R.string.twitter_app_id), getResources().getString(R.string.twitter_app_secret)))     //passed the app ID and secret respectively

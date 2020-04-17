@@ -64,6 +64,9 @@ dependencies {
     //bottom sheets
     implementation 'com.afollestad.material-dialogs:core:3.2.1'
     implementation 'com.afollestad.material-dialogs:bottomsheets:3.2.1'
+    //DextEr runtime permissions
+    implementation 'com.karumi:dexter:6.1.0'
+
 
 
 }

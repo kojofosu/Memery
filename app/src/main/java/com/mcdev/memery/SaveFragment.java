@@ -1,5 +1,6 @@
 package com.mcdev.memery;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +28,23 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.andrognito.flashbar.Flashbar;
 
 import com.esafirm.rxdownloader.RxDownloader;
+import com.google.android.material.snackbar.Snackbar;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.DexterActivity;
+import com.karumi.dexter.DexterBuilder;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.DexterError;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.PermissionRequestErrorListener;
+import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.karumi.dexter.listener.multi.SnackbarOnAnyDeniedMultiplePermissionsListener;
+import com.karumi.dexter.listener.single.CompositePermissionListener;
+import com.karumi.dexter.listener.single.PermissionListener;
+import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
@@ -39,6 +57,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.List;
+
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import retrofit2.Call;
@@ -83,21 +103,71 @@ public class SaveFragment extends Fragment {
 
 
         //listeners
+        downloadLottieAnimationView.setEnabled(true);       //enabling download button
         downloadLottieAnimationView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "Fetching...", Toast.LENGTH_SHORT).show();     //Toast to the user
-                progressTextView.setText("Fetching...");
-                Long id = getTweetId(tweetUrlET.getText().toString());      //getting tweet id from edit text and passing to getTweetId func
-                Log.d("TAG", "tweet is + " + tweetUrlET.getText().toString());
-                if (id !=null) {        //checking if string id is not null
-                    Log.d("TAG", "tweet id is + " + id);
-                    getTweet(id);       //getTweet
-                }
+                //check if user has granted permissions
+                /*DEXTER RUNTIME PERMISSIONS*/
+                checkPermissionsWithDexter();
+
+
+
+//                MultiplePermissionsListener multiplePermissionsListener = DialogOnAnyDeniedMultiplePermissionsListener.Builder
+//                        .withContext(getContext())
+//                        .withTitle("Storage permission")
+//                        .withMessage("Storage permission is needed to begin download")
+//                        .withButtonText(android.R.string.ok)
+//                        .withIcon(R.mipmap.ic_launcher)
+//                        .build();
+
+
+
             }
         });
         return view;
     }
+
+    private void checkPermissionsWithDexter() {
+        Dexter.withContext(getContext())
+                .withPermission( Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+                        Log.d(TAG, "WRITE_EXTERNAL_STORAGE permission granted");
+                        goAheadWithDownload();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
+                        Log.d(TAG, "WRITE_EXTERNAL_STORAGE permission denied");
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
+                        permissionToken.continuePermissionRequest();        //needed for dialog to show a second time when user denies it
+                    }
+                })
+                .withErrorListener(new PermissionRequestErrorListener() {
+                    @Override
+                    public void onError(DexterError dexterError) {
+                        Log.e("Dexter", "There was an error: " + dexterError.toString());
+                    }
+                })
+                .check();
+    }
+
+    private void goAheadWithDownload() {
+        Toast.makeText(getContext(), "Fetching...", Toast.LENGTH_SHORT).show();     //Toast to the user
+        progressTextView.setText(R.string.fetching);
+        Long id = getTweetId(tweetUrlET.getText().toString());      //getting tweet id from edit text and passing to getTweetId func
+        Log.d("TAG", "tweet is + " + tweetUrlET.getText().toString());
+        if (id !=null) {        //checking if string id is not null
+            Log.d("TAG", "tweet id is + " + id);
+            getTweet(id);       //getTweet
+        }
+    }
+
     /*Get tweet*/
     private void getTweet(final Long id) {
         TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();       //initializing twitter api client
@@ -119,11 +189,10 @@ public class SaveFragment extends Fragment {
                 String username = result.data.user.name;        //The name of the user, as they've defined it. Not necessarily a person's name. Typically capped at 20 characters, but subject to change
                 String userScreenName = result.data.user.screenName;        //The screen name, handle, or alias that this user identifies themselves with. screen_names are unique but subject to change. Use id_str as a user identifier whenever possible. Typically a maximum of 15 characters long, but some historical accounts may exist with longer names.
                 String userUID = result.data.user.idStr;           //The string representation of the unique identifier for this User. Implementations should use this rather than the large, possibly un-consumable integer in id
-//                String hashTags = result.data.entities.hashtags.get(i).text;       // Name of the hashtag, minus the leading '#' character.
+                //String hashTags = result.data.entities.hashtags.get(i).text;       // Name of the hashtag, minus the leading '#' character.
                 String tweetType = result.data.extendedEntities.media.get(0).type;      //The tweet type
 
 
-//                String url;     //file url
                 Log.d("TAG", "tweet type is : " + result.data.extendedEntities.media.get(0).type);
 
                 /*Checking if file is video or an animated gif*/
@@ -196,7 +265,9 @@ public class SaveFragment extends Fragment {
 
                         @Override
                         public void onAnimationEnd(Animator animator) {
-                            progressTextView.setText("");
+                            progressTextView.setText("");       //vanishing the fetching text
+                            downloadLottieAnimationView.setEnabled(false);      //disabling the download button when there's alread a download in progress
+
                             progressFlashBar = new Flashbar.Builder(getActivity())
                                     .gravity(Flashbar.Gravity.TOP)
                                     .title("Downloading...")
@@ -267,6 +338,7 @@ public class SaveFragment extends Fragment {
             public void onComplete() {
                 Log.d("TAG", "subscribe onComplete " );         //download complete
                 tweetUrlET.setText("");     //clearing the url from the edit text when download is complete
+                downloadLottieAnimationView.setEnabled(true);       //enabling the download button
                 progressFlashBar.dismiss();
                 Flashbar flashbar = new Flashbar.Builder(getActivity())
                         .gravity(Flashbar.Gravity.TOP)
@@ -285,7 +357,7 @@ public class SaveFragment extends Fragment {
                     public void run() {
                         Intent intent = getActivity().getIntent();
                         getActivity().overridePendingTransition(0, 0);
-                        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         getActivity().finish();
@@ -303,7 +375,6 @@ public class SaveFragment extends Fragment {
 
     private void init(@NotNull View view ) {
         tweetUrlET = view.findViewById(R.id.tweetD_url);
-//        downloadTweetBtn = view.findViewById(R.id.downloadTweet);
         downloadLottieAnimationView = view.findViewById(R.id.downloadTweet);
         progressTextView = view.findViewById(R.id.progress_textview);
     }

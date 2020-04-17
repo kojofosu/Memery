@@ -6,7 +6,7 @@
         android:id="@+id/memeries"
         android:title="@string/memeries"
         android:icon="@drawable/ic_quote"
-        app:cnb_iconColor="#A53C3C"/>
+        android:enabled="true"/>
     <item
         android:id="@+id/save"
         android:title="@string/save"
@@ -17,6 +17,4 @@
         android:title="Me"
         android:icon="@drawable/ic_account"
         />
-
-
 </menu>

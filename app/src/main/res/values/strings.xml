@@ -10,4 +10,5 @@
     <string name="enter_url">Enter URL</string>
     <string name="log_out">Logout</string>
     <string name="cancel">Cancel</string>
+    <string name="fetching">Fetching...</string>
 </resources>

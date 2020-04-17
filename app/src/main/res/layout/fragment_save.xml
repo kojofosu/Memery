@@ -34,7 +34,7 @@
         android:layout_below="@+id/tweetD_url"
         android:scaleType="centerCrop"
         android:layout_centerInParent="true"
-        app:lottie_rawRes="@raw/download_two"/>
+        app:lottie_rawRes="@raw/download_two" />
     <!--    <Button-->
 <!--        android:id="@+id/downloadTweet"-->
 <!--        android:layout_width="wrap_content"-->

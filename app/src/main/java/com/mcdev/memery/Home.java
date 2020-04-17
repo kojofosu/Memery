@@ -2,7 +2,6 @@ package com.mcdev.memery;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,9 +9,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.bottomsheets.BottomSheet;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.mcdev.memery.Adapters.ViewpagerAdapter;
 
@@ -40,10 +36,6 @@ public class Home extends AppCompatActivity {
         //listeners
         chipNavigationListener();
 
-        //enabling home fragment chip button by default when app is launched
-//        chipNavigationBar.setItemSelected(R.id.memeries, true);
-//        isChipItemSelected(R.id.memeries);
-
         //getting data from share
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -55,7 +47,9 @@ public class Home extends AppCompatActivity {
                 initViewpager(URL);
                 viewPager.setCurrentItem(1);        //if its from a shareable content, launch the save fragment
                 isChipItemSelected(R.id.save);      //if its from a shareable content, select the save fragment's chip
-                Log.println(Log.ASSERT,"shareableTextExtra",URL);
+                if (URL != null) {
+                    Log.println(Log.ASSERT,"shareableTextExtra",URL);
+                }
                 Log.d(TAG, "action : " + action);
                 Log.d(TAG, "type : " + type);
 
