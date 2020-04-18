@@ -17,34 +17,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.LayoutMode;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.MaterialDialogKt;
-import com.afollestad.materialdialogs.bottomsheets.BottomSheet;
-import com.afollestad.materialdialogs.callbacks.DialogCallbackExtKt;
-import com.afollestad.materialdialogs.internal.main.DialogLayout;
 import com.airbnb.lottie.LottieAnimationView;
 
 import com.andrognito.flashbar.Flashbar;
 
 import com.esafirm.rxdownloader.RxDownloader;
-import com.google.android.material.snackbar.Snackbar;
 import com.karumi.dexter.Dexter;
-import com.karumi.dexter.DexterActivity;
-import com.karumi.dexter.DexterBuilder;
-import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.DexterError;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
-import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.karumi.dexter.listener.multi.SnackbarOnAnyDeniedMultiplePermissionsListener;
-import com.karumi.dexter.listener.single.CompositePermissionListener;
 import com.karumi.dexter.listener.single.PermissionListener;
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
@@ -57,7 +42,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -71,7 +55,6 @@ public class SaveFragment extends Fragment {
     private final static String TAG = SaveFragment.class.getSimpleName();
 
     private EditText tweetUrlET;
-//    private Button downloadTweetBtn;
     private LottieAnimationView downloadLottieAnimationView;
     private TextView progressTextView;
     Flashbar progressFlashBar;
@@ -110,19 +93,6 @@ public class SaveFragment extends Fragment {
                 //check if user has granted permissions
                 /*DEXTER RUNTIME PERMISSIONS*/
                 checkPermissionsWithDexter();
-
-
-
-//                MultiplePermissionsListener multiplePermissionsListener = DialogOnAnyDeniedMultiplePermissionsListener.Builder
-//                        .withContext(getContext())
-//                        .withTitle("Storage permission")
-//                        .withMessage("Storage permission is needed to begin download")
-//                        .withButtonText(android.R.string.ok)
-//                        .withIcon(R.mipmap.ic_launcher)
-//                        .build();
-
-
-
             }
         });
         return view;
