@@ -78,7 +78,6 @@ public class Login extends AppCompatActivity {
         //making activity fullscreen
         setWindowFullScreen();
 
-
         isUserLoggedIntoFirebase();
 
         firestoreReference.collection(StringConstants.LOGIN_BACKGROUND_COLLECTION).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
