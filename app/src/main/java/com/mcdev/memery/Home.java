@@ -78,17 +78,7 @@ public class Home extends AppCompatActivity {
             Handler handler = new Handler();        // init handler
             Runnable runnable = new Runnable() {
                 public void run() {
-                    final int interval = 1000;      // 1 Second before the item enables again for user to be able to click
-                    Handler handler = new Handler();
-                    Runnable runnable = new Runnable() {
-                        public void run() {
-                            chipNavigationBar.setItemEnabled(getSelectedItemId, true);
-                        }
-                    };
-                    handler.postAtTime(runnable, System.currentTimeMillis() + interval);        //chip enabler handler
-                    handler.postDelayed(runnable, interval);
-
-                    chipNavigationBar.setItemEnabled(getSelectedItemId, false);     //disabling chip item to reverse animation
+                    chipNavigationBar.setItemSelected(getSelectedItemId, false);     //deselecting chip item to reverse animation
                     Log.d(TAG, "chipNavigation bar getSelectedItemId : " + chipNavigationBar.getSelectedItemId());
                 }
             };
