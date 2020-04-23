@@ -54,6 +54,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.3.0'
     //firebase firestore database
     implementation 'com.google.firebase:firebase-firestore:21.4.2'
+    //firebase storage
+    implementation 'com.google.firebase:firebase-storage:19.1.1'
     //facebook
     implementation 'com.facebook.android:facebook-android-sdk:5.15.3'
     //twitter
@@ -86,5 +88,7 @@ dependencies {
     //extractor lib
 //    implementation 'com.github.evgenyneu:js-evaluator-for-android:v5.0.0'
     implementation 'com.github.kotvertolet:youtube-jextractor:v0.2.5'
+    //video cache
+    implementation 'com.vincan:medialoader:1.0.0'
 
 }

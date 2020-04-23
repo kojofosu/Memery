@@ -1,5 +1,7 @@
 package com.mcdev.memery;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -34,6 +36,7 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
     private static final String TAG = LogoutBottomSheetFragment.class.getSimpleName();
     private Button confirmLogoutBtn, cancelLogoutBtn;
     private FirebaseAuth firebaseAuth;
+    private SharedPreferences sharedPreferences;
     public LogoutBottomSheetFragment() {
         // Required empty public constructor
     }
@@ -54,6 +57,9 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
         //listeners
         confirmLogoutListener();
         cancelLogoutListener();
+
+        //sharedPrefs
+        sharedPreferences = getContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
         return view;
     }
 
@@ -83,6 +89,8 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
                             public void onCompleted(GraphResponse response) {
                                 LoginManager.getInstance().logOut();        //Log user out of facebook
                                 firebaseAuth.signOut();     //log user out of firebase
+                                sharedPreferences.edit().clear();    //clearing data in shared preference
+                                sharedPreferences.edit().apply();       //applying changes
                                 SendUserToLoginActivity(view);      //send the user to login page
                             }
                         }).executeAsync();      //execute permission deletion
@@ -91,6 +99,8 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
                         //then log user out of twitter
                         TwitterCore.getInstance().getSessionManager().clearActiveSession();     //clearing current user session
                         firebaseAuth.signOut();     //log user out of firebase
+                        sharedPreferences.edit().clear();    //clearing data in shared preference
+                        sharedPreferences.edit().apply();       //applying changes
                         SendUserToLoginActivity(view);      //send the user to login page
                     }
 

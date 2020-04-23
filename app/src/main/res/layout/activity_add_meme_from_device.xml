@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".AddMemeFromDeviceActivity">
 
-<!--    <Button-->
-<!--        android:id="@+id/buttonnn"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="click me"/>-->
-
-
-
     <ImageView
         android:id="@+id/imageViewww"
         android:layout_width="match_parent"
@@ -45,7 +37,7 @@
         android:paddingBottom="10dp"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/home_fab"
+        android:id="@+id/post_meme_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

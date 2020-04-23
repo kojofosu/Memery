@@ -1,23 +1,24 @@
 package com.mcdev.memery;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.picker.gallery.model.GalleryImage;
-import com.picker.gallery.model.interactor.GalleryPicker;
-import com.picker.gallery.view.PickerActivity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.mcdev.memery.General.StringConstants;
+import com.mcdev.memery.POJOS.MemeUploads;
 import com.squareup.picasso.Picasso;
 
 public class AddMemeFromDeviceActivity extends AppCompatActivity {
@@ -25,9 +26,9 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
     private static final String TAG = AddMemeFromDeviceActivity.class.getSimpleName();
     private Uri URI;
     private String PATH;
-    private static final int PickMeme = 212;
     ImageView imageView;
     VideoView videoView;
+    private FloatingActionButton fab;
 
 
     @Override
@@ -35,32 +36,17 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_meme_from_device);
 
-//        Button clickme = findViewById(R.id.buttonnn);
-        imageView = findViewById(R.id.imageViewww);
-        videoView = findViewById(R.id.videoViewwww);
+        //init
+        init();
+
+        //set fullscreen
+        setWindowFullScreen();
 
         /*Getting string extras*/
         URI = (Uri) getIntent().getExtras().get("URI");
         Log.d(TAG, "URI : " + URI);
         PATH = (String) getIntent().getExtras().get("PATH");
         Log.d(TAG, "PATH : " + PATH);
-
-//        GalleryImage galleryImage = new GalleryImage();
-//        String gn = galleryImage.getDISPLAY_NAME();
-//        Log.e("TAG", gn);
-//        Toast.makeText(this, gn, Toast.LENGTH_SHORT).show();
-//        GalleryPicker galleryPicker = new GalleryPicker(this);
-//        PickerActivity pickerActivity = new PickerActivity();
-//        pickerActivity.getREQUEST_TAKE_PHOTO();
-//        galleryPicker.getImages().get(0).get
-//        clickme.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(Intent.ACTION_PICK);
-//                intent.setType("image/*,video/*");
-//                startActivityForResult(intent, PickMeme);
-//            }
-//        });
 
         if (PATH.contains("/video/")) {
             Log.d(this.getClass().getName(), "Video");
@@ -72,9 +58,36 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
             videoView.setVisibility(View.GONE);
             imageView.setVisibility(View.VISIBLE);
             Picasso.get().load(URI).into(imageView);
-//                imageView.setImageBitmap();
         }
 
+        //listeners
+        fabListener();
+
+
+    }
+
+    private void fabListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //first posting the meme to firebase storage to get the download url
+                postMemeToStorage();
+                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserDetails", MODE_PRIVATE);
+                String eyeDee = sharedPreferences.getString("userID", null);
+                Log.d(TAG, "userID " + eyeDee);
+            }
+        });
+    }
+
+    private void postMemeToStorage() {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+//        storageReference.child(StringConstants.STORAGE_MEME_UPLOADS).
+    }
+
+    private void init() {
+        imageView = findViewById(R.id.imageViewww);
+        videoView = findViewById(R.id.videoViewwww);
+        fab = findViewById(R.id.post_meme_fab);
     }
 
 
@@ -122,5 +135,10 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         final float volume = (float) (1 - (numerator / Math.log(max)));
 
         mediaPlayer.setVolume(volume, volume);
+    }
+
+    private void setWindowFullScreen() {
+        Window w = getWindow();     //initializing window
+        w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);     //setting window flags to make status bar translucent
     }
 }

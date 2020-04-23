@@ -1,5 +1,7 @@
 package com.mcdev.memery;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -95,6 +97,10 @@ public class ProfileFragment extends Fragment {
             String username = firebaseUser.getDisplayName();
             String userEmail = firebaseUser.getEmail();
             String userPhone = firebaseUser.getPhoneNumber();
+            String uid = firebaseUser.getUid();
+            SharedPreferences sharedPreferences = getContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
+            sharedPreferences.edit().putString("userID", uid).apply();
+            sharedPreferences.edit().apply();
             //checking to see if user is logged in with facebook or twitter so i can handle the profile images well to display in HD
             if (isUserLoggedInWithFacebook()){
                 String userPhotoUrl = firebaseUser.getPhotoUrl().toString() + "?height=500";        //getting the HD version of user facebook profile image

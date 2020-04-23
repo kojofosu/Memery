@@ -40,7 +40,14 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.vincan.medialoader.DefaultConfigFactory;
+import com.vincan.medialoader.DownloadManager;
+import com.vincan.medialoader.MediaLoader;
+import com.vincan.medialoader.MediaLoaderConfig;
+import com.vincan.medialoader.data.file.naming.HashCodeFileNameCreator;
+import com.vincan.medialoader.download.DownloadListener;
 
+import java.io.File;
 import java.util.Objects;
 
 /*TODO
@@ -64,6 +71,8 @@ public class Login extends AppCompatActivity {
     //twitter login
     TwitterLoginButton twitterLoginButton;
 
+    MediaLoader mediaLoader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +89,9 @@ public class Login extends AppCompatActivity {
 
         isUserLoggedIntoFirebase();
 
+        //video cache
+        videoCaching();
+
         firestoreReference.collection(StringConstants.LOGIN_BACKGROUND_COLLECTION).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -94,14 +106,69 @@ public class Login extends AppCompatActivity {
                                 String backgroundFile = documentChange.getDocument().getString("file");
                                 Log.d(TAG, "login background video file (added) : " + backgroundFile);
                                 //load video on video view
-                                loadVideoVideo(backgroundFile);
+//                                DownloadManager.getInstance(Login.this).enqueue(new DownloadManager.Request(backgroundFile), new DownloadListener() {
+//                                    @Override
+//                                    public void onProgress(String url, File file, int progress) {
+//                                        Log.d(TAG, "cached url ; " + url);
+//                                        Log.d(TAG, "cached file ; " + file.getPath());
+//                                        Log.d(TAG, "cached progress ; " + progress);
+//
+////                                        String proxyUrl = MediaLoader.getInstance(Login.this).getProxyUrl(backgroundFile);      //video cache
+//                                        loadVideoVideo(url);
+//                                    }
+//
+//                                    @Override
+//                                    public void onError(Throwable e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                });
+                                String proxyUrl = MediaLoader.getInstance(getApplicationContext()).getProxyUrl(backgroundFile);
+                                Log.d(TAG, "proxy url : " + proxyUrl);
+                                loadVideoVideo(proxyUrl);
+                                if (mediaLoader.isCached(proxyUrl)){
+                                    Log.d(TAG, "proxy url is cached : ");
+                                }else{
+                                    Log.d(TAG, "proxy url is not cached : ");
+                                }
                                 break;
                             case MODIFIED:
                                 //getting the string value for the background file
                                 backgroundFile = documentChange.getDocument().getString("file");
                                 Log.d(TAG, "login background video file (modified) : " + backgroundFile);
                                 //load video on video view
-                                loadVideoVideo(backgroundFile);
+                                DownloadManager.getInstance(Login.this).enqueue(new DownloadManager.Request(backgroundFile), new DownloadListener() {
+                                    @Override
+                                    public void onProgress(String url, File file, int progress) {
+                                        Log.d(TAG, "cached url ; " + url);
+                                        Log.d(TAG, "cached file ; " + file.getPath());
+                                        Log.d(TAG, "cached progress ; " + progress);
+
+//                                        String proxyUrl = MediaLoader.getInstance(Login.this).getProxyUrl(backgroundFile);      //video cache
+                                        loadVideoVideo(url);
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+//                                mediaLoader.addDownloadListener(backgroundFile, new DownloadListener() {
+//                                    @Override
+//                                    public void onProgress(String url, File file, int progress) {
+//                                        Log.d(TAG, "cached url ; " + url);
+//                                        Log.d(TAG, "cached file ; " + file.getPath());
+//                                        Log.d(TAG, "cached progress ; " + progress);
+//
+////                                        String proxyUrl = MediaLoader.getInstance(Login.this).getProxyUrl(backgroundFile);      //video cache
+//                                        loadVideoVideo(url);
+//                                    }
+//
+//                                    @Override
+//                                    public void onError(Throwable e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                });
+
                             case REMOVED:
                                 break;
                         }
@@ -114,6 +181,22 @@ public class Login extends AppCompatActivity {
         //listeners
         facebookLoginStuff();
         twitterLoginStuff();
+
+
+    }
+
+    private void videoCaching() {
+        MediaLoaderConfig mediaLoaderConfig = new MediaLoaderConfig.Builder(this)
+                .cacheRootDir(DefaultConfigFactory.createCacheRootDir(this))//directory for cached files
+                .cacheFileNameGenerator(new HashCodeFileNameCreator())//names for cached files
+                .maxCacheFilesCount(100)//max files count
+                .maxCacheFilesSize(100 * 1024 * 1024)//max files size
+                .maxCacheFileTimeLimit(5 * 24 * 60 * 60)//max file time
+                .downloadThreadPoolSize(2)//download thread size
+                .downloadThreadPriority(Thread.MAX_PRIORITY)//download thread priority
+                .build();
+        mediaLoader = MediaLoader.getInstance(this);
+        mediaLoader.init(mediaLoaderConfig);
     }
 
     private void setWindowFullScreen() {
@@ -235,12 +318,13 @@ public class Login extends AppCompatActivity {
                                     if (authResult.getUser() != null){
                                         //creating the document to get the ID and add it as a field in the users collection
                                         DocumentReference documentReference = firestoreReference.collection(StringConstants.USERS_COLLECTION).document();
-                                        String documentID = documentReference.getId();
+//                                        String documentID = documentReference.getId();
+                                        String documentID = authResult.getUser().getUid();
 
                                         //population user field
                                         users.setUserName(authResult.getUser().getDisplayName());
                                         users.setUserEmail(authResult.getUser().getEmail());
-                                        users.setUserId(authResult.getUser().getUid());
+                                        users.setUserId(documentID);
                                         users.setUserPhoneNumber(authResult.getUser().getPhoneNumber());
                                         users.setUserPhotoUrl(authResult.getUser().getPhotoUrl().toString());
                                         users.setAccountCreation(authResult.getUser().getMetadata().getCreationTimestamp());

@@ -11,21 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.squareup.picasso.Picasso;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterApiClient;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.core.services.StatusesService;
-import retrofit2.Call;
 import org.jetbrains.annotations.NotNull;
 
 import static android.app.Activity.RESULT_OK;
@@ -61,14 +47,6 @@ public class HomeFragment extends Fragment {
         homeFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Bottom Sheets Fragment
-//                AddMemeBottomSheetFragment addMemeBottomSheetFragment = new AddMemeBottomSheetFragment();
-//                if (getFragmentManager() != null) {
-//                    addMemeBottomSheetFragment.show(getFragmentManager(), addMemeBottomSheetFragment.getTag());
-//                }
-                //activity
-//                startActivity(new Intent(getActivity(), AddMemeFromDeviceActivity.class));
-                //gallery intent
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*,video/*");
                 startActivityForResult(intent, PickMeme);
