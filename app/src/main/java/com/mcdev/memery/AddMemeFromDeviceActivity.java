@@ -22,18 +22,28 @@ import com.squareup.picasso.Picasso;
 
 public class AddMemeFromDeviceActivity extends AppCompatActivity {
 
+    private static final String TAG = AddMemeFromDeviceActivity.class.getSimpleName();
+    private Uri URI;
+    private String PATH;
     private static final int PickMeme = 212;
     ImageView imageView;
     VideoView videoView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_meme_from_device);
 
-        Button clickme = findViewById(R.id.buttonnn);
+//        Button clickme = findViewById(R.id.buttonnn);
         imageView = findViewById(R.id.imageViewww);
         videoView = findViewById(R.id.videoViewwww);
+
+        /*Getting string extras*/
+        URI = (Uri) getIntent().getExtras().get("URI");
+        Log.d(TAG, "URI : " + URI);
+        PATH = (String) getIntent().getExtras().get("PATH");
+        Log.d(TAG, "PATH : " + PATH);
 
 //        GalleryImage galleryImage = new GalleryImage();
 //        String gn = galleryImage.getDISPLAY_NAME();
@@ -43,40 +53,30 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
 //        PickerActivity pickerActivity = new PickerActivity();
 //        pickerActivity.getREQUEST_TAKE_PHOTO();
 //        galleryPicker.getImages().get(0).get
-        clickme.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*,video/*");
-                startActivityForResult(intent, PickMeme);
-            }
-        });
+//        clickme.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(Intent.ACTION_PICK);
+//                intent.setType("image/*,video/*");
+//                startActivityForResult(intent, PickMeme);
+//            }
+//        });
 
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PickMeme && resultCode == RESULT_OK){
-            Uri theUri = data.getData();
-            Log.e("TAG", theUri.toString());
-            Toast.makeText(this, "picked image", Toast.LENGTH_SHORT).show();
-            String path = data.getData().getPath();
-            if (path.contains("/video/")) {
-                Log.d(this.getClass().getName(), "Video");
-                imageView.setVisibility(View.GONE);
-                videoView.setVisibility(View.VISIBLE);
-                loadVideoVideo(theUri);
-            } else if (path.contains("/images/")) {
-                Log.d(this.getClass().getName(), "Image");
-                videoView.setVisibility(View.GONE);
-                imageView.setVisibility(View.VISIBLE);
-                Picasso.get().load(theUri).into(imageView);
+        if (PATH.contains("/video/")) {
+            Log.d(this.getClass().getName(), "Video");
+            imageView.setVisibility(View.GONE);
+            videoView.setVisibility(View.VISIBLE);
+            loadVideoVideo(URI);
+        } else if (PATH.contains("/images/")) {
+            Log.d(this.getClass().getName(), "Image");
+            videoView.setVisibility(View.GONE);
+            imageView.setVisibility(View.VISIBLE);
+            Picasso.get().load(URI).into(imageView);
 //                imageView.setImageBitmap();
-            }
         }
+
     }
+
 
     private void loadVideoVideo(Uri backgroundFile) {
         Log.d("TAG", "backgroundVideo " + backgroundFile);

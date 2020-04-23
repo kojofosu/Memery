@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".AddMemeFromDeviceActivity">
 
-    <Button
-        android:id="@+id/buttonnn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="click me"/>
+<!--    <Button-->
+<!--        android:id="@+id/buttonnn"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="click me"/>-->
 
 
 
@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_gravity="bottom"
-        android:background="#BF292929"
+        android:background="#DF292929"
         android:textColor="@android:color/white"
         android:hint="Caption"
         android:textColorHint="@android:color/secondary_text_dark"
