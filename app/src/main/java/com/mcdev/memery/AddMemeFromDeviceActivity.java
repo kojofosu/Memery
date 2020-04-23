@@ -1,5 +1,6 @@
 package com.mcdev.memery;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
@@ -11,12 +12,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.mcdev.memery.General.StringConstants;
 import com.mcdev.memery.POJOS.MemeUploads;
 import com.squareup.picasso.Picasso;
@@ -29,6 +38,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
     ImageView imageView;
     VideoView videoView;
     private FloatingActionButton fab;
+    private EditText memeCaptionET;
 
 
     @Override
@@ -48,46 +58,111 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         PATH = (String) getIntent().getExtras().get("PATH");
         Log.d(TAG, "PATH : " + PATH);
 
+        String selectedType = null;        //to get the type of content that was selected either an image or video file
+
         if (PATH.contains("/video/")) {
             Log.d(this.getClass().getName(), "Video");
             imageView.setVisibility(View.GONE);
             videoView.setVisibility(View.VISIBLE);
+            selectedType = "video";
             loadVideoVideo(URI);
         } else if (PATH.contains("/images/")) {
             Log.d(this.getClass().getName(), "Image");
             videoView.setVisibility(View.GONE);
             imageView.setVisibility(View.VISIBLE);
+            selectedType = "image/gif";
             Picasso.get().load(URI).into(imageView);
         }
 
         //listeners
-        fabListener();
+        if (selectedType != null){
+            Log.d(TAG, "meme type " + selectedType);
+            fabListener(selectedType);
+        }else{
+            Log.e(TAG, "No content selected");
+        }
+
 
 
     }
 
-    private void fabListener() {
+    private void fabListener(String selectedType) {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //first posting the meme to firebase storage to get the download url
-                postMemeToStorage();
+                String caption = memeCaptionET.getText().toString();
                 SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserDetails", MODE_PRIVATE);
                 String eyeDee = sharedPreferences.getString("userID", null);
                 Log.d(TAG, "userID " + eyeDee);
+                Log.d(TAG, "Uri for storage " + URI);
+                if (eyeDee != null){
+                    postMemeToStorage(eyeDee, URI, caption, selectedType);
+                }
+
+
             }
         });
     }
 
-    private void postMemeToStorage() {
+    private void postMemeToStorage(String currentUserId, Uri URI, String caption, String selectedType) {
+        //database
+        FirebaseFirestore firebaseFirestore =  FirebaseFirestore.getInstance();     //init firestore
+        DocumentReference documentReference = firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION).document();     //init document
+        String memeID = documentReference.getId();          //generation meme id and storing it in String variable
+        //storage
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-//        storageReference.child(StringConstants.STORAGE_MEME_UPLOADS).
+        StorageReference memeStorageRef = storageReference.child(StringConstants.STORAGE_MEME_UPLOADS).child(currentUserId).child(memeID);      //meme id was the last child so as to prevent the overriding of uploads
+        memeStorageRef.putFile(URI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                //getting download url of meme
+                memeStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        //Getting current timestamp
+                        Long tsLong = System.currentTimeMillis()/1000;
+
+                        //populating meme upload field
+                        MemeUploads memeUploads = new MemeUploads();
+                        memeUploads.setUploadedBy(currentUserId);
+                        memeUploads.setMemeId(memeID);
+                        memeUploads.setMemeTitle(caption);
+                        memeUploads.setMemeType(selectedType);
+                        memeUploads.setPostedAt(tsLong);
+                        memeUploads.setDownloadUrl(uri.toString());
+                        memeUploads.setPrivate(false);
+
+                        //posting to db
+                        firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION)
+                                .document(memeID)
+                                .set(memeUploads)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "Upload Success");
+                                        Toast.makeText(AddMemeFromDeviceActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+                                });
+                    }
+                });
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Uploading meme failed with " + e.getLocalizedMessage());
+                Toast.makeText(AddMemeFromDeviceActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void init() {
         imageView = findViewById(R.id.imageViewww);
         videoView = findViewById(R.id.videoViewwww);
         fab = findViewById(R.id.post_meme_fab);
+        memeCaptionET = findViewById(R.id.meme_caption);
     }
 
 

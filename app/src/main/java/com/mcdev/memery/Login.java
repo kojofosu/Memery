@@ -244,7 +244,7 @@ public class Login extends AppCompatActivity {
                                         DocumentReference documentReference = firestoreReference.collection(StringConstants.USERS_COLLECTION).document();
                                         String documentID = documentReference.getId();
 
-                                        //population user field
+                                        //populating user field
                                         users.setUserName(authResult.getUser().getDisplayName());
                                         users.setUserEmail(authResult.getUser().getEmail());
                                         users.setUserId(authResult.getUser().getUid());
