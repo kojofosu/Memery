@@ -28,9 +28,30 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:visibility="gone"/>
-    <com.github.mmin18.widget.RealtimeBlurView
+
+    <EditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:realtimeBlurRadius="20dp"
-        app:realtimeOverlayColor="#8000" />
+        android:layout_height="55dp"
+        android:layout_gravity="bottom"
+        android:background="#BF292929"
+        android:textColor="@android:color/white"
+        android:hint="Caption"
+        android:textColorHint="@android:color/secondary_text_dark"
+        android:singleLine="true"
+        android:inputType="text"
+        android:paddingStart="20dp"
+        android:paddingEnd="80dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/home_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        android:src="@drawable/ic_send"
+        android:background="@null"
+        android:clickable="true"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

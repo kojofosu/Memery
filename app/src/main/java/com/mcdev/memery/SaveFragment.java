@@ -3,6 +3,7 @@ package com.mcdev.memery;
 import android.Manifest;
 import android.animation.Animator;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,10 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.andrognito.flashbar.Flashbar;
 
 import com.esafirm.rxdownloader.RxDownloader;
+import com.github.kotvertolet.youtubejextractor.YoutubeJExtractor;
+import com.github.kotvertolet.youtubejextractor.exception.ExtractionException;
+import com.github.kotvertolet.youtubejextractor.exception.YoutubeRequestException;
+import com.github.kotvertolet.youtubejextractor.models.youtube.videoData.YoutubeVideoData;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.DexterError;
@@ -42,6 +48,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -130,13 +138,66 @@ public class SaveFragment extends Fragment {
     private void goAheadWithDownload() {
         Toast.makeText(getContext(), "Fetching...", Toast.LENGTH_SHORT).show();     //Toast to the user
         progressTextView.setText(R.string.fetching);
-        Long id = getTweetId(tweetUrlET.getText().toString());      //getting tweet id from edit text and passing to getTweetId func
-        Log.d("TAG", "tweet is + " + tweetUrlET.getText().toString());
-        if (id !=null) {        //checking if string id is not null
-            Log.d("TAG", "tweet id is + " + id);
-            getTweet(id);       //getTweet
+        String LinkURL = tweetUrlET.getText().toString();
+        //checking to see if content is Twitter of Youtube
+        if(LinkURL.contains("twitter.com")){
+            Log.d(TAG, "This is a twitter content ");
+            Long id = getTweetId(LinkURL);      //getting tweet id from edit text and passing to getTweetId func
+            Log.d("TAG", "tweet is + " + tweetUrlET.getText().toString());
+            if (id !=null) {        //checking if string id is not null
+                Log.d("TAG", "tweet id is + " + id);
+                getTweet(id);       //getTweet
+            }
         }
+        else if (LinkURL.contains("youtube.com") || LinkURL.contains("youtu.be")){
+            new AsyncCaller().execute(LinkURL);
+//            new YTExtractor(getContext()){
+//                @Override
+//                protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
+//                    if (ytFiles != null) {
+//                        int itag = 22;
+//                        String downloadUrl = ytFiles.get(itag).getUrl();
+//                        String author = videoMeta.getAuthor();
+//                        String title = videoMeta.getTitle();
+//                        Log.d(TAG, "downloadUrl : " + downloadUrl);
+//                        Log.d(TAG, "author : " + author);
+//                        Log.d(TAG, "title : " + title);
+//
+//                        String filename = author + title + ".mp4";
+//                        Log.d(TAG, "filename : " + filename);
+//                        String mimeType = "video/*";
+//                        //download youtube video
+////                        downloadVideo(downloadUrl, filename, mimeType);
+//                    }
+//                }
+//            }.extract(LinkURL, true, true);
+
+
+//            new YouTubeExtractor(getContext()) {
+//                @Override
+//                protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
+//                    if (ytFiles != null) {
+//                        int itag = 22;
+//                        String downloadUrl = ytFiles.get(itag).getUrl();
+//                        String author = videoMeta.getAuthor();
+//                        String title = videoMeta.getTitle();
+//                        Log.d(TAG, "downloadUrl : " + downloadUrl);
+//                        Log.d(TAG, "author : " + author);
+//                        Log.d(TAG, "title : " + title);
+//
+//                        String filename = author + title + ".mp4";
+//                        Log.d(TAG, "filename : " + filename);
+//                        String mimeType = "video/*";
+//                        //download youtube video
+////                        downloadVideo(downloadUrl, filename, mimeType);
+//                    }
+//                }
+//            }.extract(LinkURL, true, true);
+
+        }
+
     }
+
 
     /*Get tweet*/
     private void getTweet(final Long id) {
@@ -360,5 +421,115 @@ public class SaveFragment extends Fragment {
 //            alertNoUrl();
             return null;
         }
+    }
+
+    private String getYouTubeId (String youTubeUrl) {
+        String pattern = "(?<=youtu.be/|watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(youTubeUrl);
+        if(matcher.find()){
+            return matcher.group();
+        } else {
+            return "error";
+        }
+    }
+
+    private class AsyncCaller extends AsyncTask<String, Void, Void>
+    {
+        String muxedUrl;
+        String filename;
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            String url = strings[0];
+            Log.d(TAG, "This is a youtube content ");
+            Log.d(TAG, "youtube url is : " + url);
+            String id = getYouTubeId(url);
+            Log.d(TAG, "Youtube video ID : " + id);
+            YoutubeJExtractor youtubeJExtractor = new YoutubeJExtractor();
+            YoutubeVideoData youtubeVideoData;
+            try {
+                youtubeVideoData = youtubeJExtractor.extract(id);
+                String title = youtubeVideoData.getVideoDetails().getTitle();
+                String author = youtubeVideoData.getVideoDetails().getAuthor();
+                filename =  author + " " +title;
+                muxedUrl = youtubeVideoData.getStreamingData().getMuxedStreams().get(0).getUrl();
+                Log.d(TAG, "filename : " + filename );
+                Log.d(TAG, "author : " + author);
+                Log.d(TAG, "title : " + title);
+                Log.d(TAG, "probe url : " + youtubeVideoData.getStreamingData().getProbeUrl());
+                Log.d(TAG, "dash manifest url : " + youtubeVideoData.getStreamingData().getDashManifestUrl());
+                Log.d(TAG, "hls manifest url : " + youtubeVideoData.getStreamingData().getHlsManifestUrl());
+                Log.d(TAG, "muxed url : " + youtubeVideoData.getStreamingData().getMuxedStreams().get(0).getUrl());
+
+            } catch (ExtractionException e) {
+                e.printStackTrace();
+            } catch (YoutubeRequestException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            filename = escapeMetaCharacters(filename) + ".mp4";
+            Log.d(TAG, "escapeMetaCharacters : " + filename);
+            downloadLottieAnimationView.playAnimation();        //play lottie animation when tweet details return success for clearer animation
+            downloadLottieAnimationView.addAnimatorListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            /*Below codes didn't get called for reasons i do not know*/
+                            //Toast.makeText(getContext(), "Fetching...", Toast.LENGTH_SHORT).show();
+                            //progressTextView.setText("Fetching...");
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            progressTextView.setText("");
+                            progressFlashBar = new Flashbar.Builder(getActivity())
+                                    .gravity(Flashbar.Gravity.TOP)
+                                    .title("Downloading...")
+                                    .message(filename)
+                                    .showProgress(Flashbar.ProgressPosition.LEFT)
+                                    //.duration(Flashbar.DURATION_INDEFINITE)       //commented this because it will crash...to make duration indefinite, don't call duration()
+                                    .enableSwipeToDismiss()
+                                    .backgroundDrawable(R.drawable.flash_bar_gradient)
+                                    .build();
+                            progressFlashBar.show();
+                            downloadVideo(muxedUrl, filename, "video/*");;        //download video
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+        }
+    }
+
+    public String escapeMetaCharacters(String inputString){
+        final String[] metaCharacters = {"\\","/","^","$","{","}","[","]","(",")",".","*","+","?","|","<",">","-","&","%"};
+
+        for (int i = 0 ; i < metaCharacters.length ; i++){
+            if(inputString.contains(metaCharacters[i])){
+//                inputString = inputString.replace(metaCharacters[i],"\\"+metaCharacters[i]);
+                inputString = inputString.replace(metaCharacters[i],"");
+            }
+        }
+        return inputString;
     }
 }

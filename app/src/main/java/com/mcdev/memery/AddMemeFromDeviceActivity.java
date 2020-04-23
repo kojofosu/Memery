@@ -101,7 +101,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
                 //float scale = Math.max(xScale, yScale);
                 //For Center Inside use the Math.min scale.
                 //I prefer Center Inside so I am using Math.min
-                float scale = Math.min(xScale, yScale);
+                float scale = Math.max(xScale, yScale);
 
                 float scaledWidth = scale * videoWidth;
                 float scaledHeight = scale * videoHeight;
