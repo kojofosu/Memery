@@ -3,6 +3,7 @@ package com.mcdev.memery;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -23,7 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.mcdev.memery.General.StringConstants;
@@ -40,6 +41,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private EditText memeCaptionET;
 
+    private LottieDialogFragment lottieDialogFragment=  new LottieDialogFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +99,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
                 Log.d(TAG, "userID " + eyeDee);
                 Log.d(TAG, "Uri for storage " + URI);
                 if (eyeDee != null){
+//                    showProgressDialog();
                     postMemeToStorage(eyeDee, URI, caption, selectedType);
                 }
 
@@ -113,9 +116,30 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         //storage
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         StorageReference memeStorageRef = storageReference.child(StringConstants.STORAGE_MEME_UPLOADS).child(currentUserId).child(memeID);      //meme id was the last child so as to prevent the overriding of uploads
-        memeStorageRef.putFile(URI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        memeStorageRef.putFile(URI).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                String uploadProgress = "Uploading..." + progress + "%";
+                Log.d(TAG, uploadProgress);
+                Bundle bundle = new Bundle();
+                bundle.putString("TEXT", uploadProgress);
+                lottieDialogFragment.setArguments(bundle);
+
+                if(lottieDialogFragment.isAdded())
+                {
+                    return ; //or return false/true, based on where you are calling from
+                }
+                lottieDialogFragment.show(getSupportFragmentManager(),"");
+//                Intent intentToDialog = new Intent(AddMemeFromDeviceActivity.this, LottieDialogFragment.class);
+//                intentToDialog.putExtra("TEXT", uploadProgress);
+//                startActivity(intentToDialog); //Here is the exception
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
                 //getting download url of meme
                 memeStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
@@ -140,6 +164,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+                                        dismissDialogFragment();
                                         Log.d(TAG, "Upload Success");
                                         Toast.makeText(AddMemeFromDeviceActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
                                         finish();
@@ -215,5 +240,15 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
     private void setWindowFullScreen() {
         Window w = getWindow();     //initializing window
         w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);     //setting window flags to make status bar translucent
+    }
+
+//    private void showProgressDialog(){
+//
+//       lottieDialogFragment.setCancelable(false);
+//       lottieDialogFragment.show(getSupportFragmentManager(),"");
+//    }
+
+    private void dismissDialogFragment(){
+        lottieDialogFragment.dismiss();
     }
 }
