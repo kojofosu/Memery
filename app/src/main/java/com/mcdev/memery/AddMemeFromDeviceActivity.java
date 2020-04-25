@@ -1,9 +1,7 @@
 package com.mcdev.memery;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -15,20 +13,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.VideoView;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.mcdev.memery.General.StringConstants;
-import com.mcdev.memery.POJOS.MemeUploads;
 import com.squareup.picasso.Picasso;
 
 public class AddMemeFromDeviceActivity extends AppCompatActivity {
@@ -64,22 +50,22 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
 
         if (PATH.contains("/video/")) {
             Log.d(this.getClass().getName(), "Video");
-            imageView.setVisibility(View.GONE);
-            videoView.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);             //setting image view invisible
+            videoView.setVisibility(View.VISIBLE);      //setting video view visible
             selectedType = "video";
-            loadVideoVideo(URI);
+            loadVideoVideo(URI);        //load video
         } else if (PATH.contains("/images/")) {
             Log.d(this.getClass().getName(), "Image");
-            videoView.setVisibility(View.GONE);
-            imageView.setVisibility(View.VISIBLE);
+            videoView.setVisibility(View.GONE);         //setting video view invisible
+            imageView.setVisibility(View.VISIBLE);      //setting image view visible
             selectedType = "image/gif";
-            Picasso.get().load(URI).into(imageView);
+            Picasso.get().load(URI).into(imageView);        //load image with picasso
         }
 
         //listeners
         if (selectedType != null){
             Log.d(TAG, "meme type " + selectedType);
-            fabListener(selectedType);
+            fabListener(selectedType);      //handle fab listener when the selected item is not null
         }else{
             Log.e(TAG, "No content selected");
         }
@@ -99,8 +85,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
                 Log.d(TAG, "userID " + eyeDee);
                 Log.d(TAG, "Uri for storage " + URI);
                 if (eyeDee != null){
-//                    showProgressDialog();
-                    postMemeToStorage(eyeDee, URI, caption, selectedType);
+                    postMemeToStorage(eyeDee, URI, caption, selectedType);      //post meme to storage
                 }
 
 
@@ -109,6 +94,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
     }
 
     private void postMemeToStorage(String currentUserId, Uri URI, String caption, String selectedType) {
+        /*init custom lottie dialog, pass parameters and inflate view*/
         LottieDialogFragment lottieDialogFragment = new LottieDialogFragment();
         lottieDialogFragment.setCancelable(false);
         Bundle bundle = new Bundle();
@@ -181,13 +167,4 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);     //setting window flags to make status bar translucent
     }
 
-//    private void showProgressDialog(){
-//
-//       lottieDialogFragment.setCancelable(false);
-//       lottieDialogFragment.show(getSupportFragmentManager(),"");
-//    }
-
-//    private void dismissDialogFragment(){
-//        lottieDialogFragment.dismiss();
-//    }
 }
