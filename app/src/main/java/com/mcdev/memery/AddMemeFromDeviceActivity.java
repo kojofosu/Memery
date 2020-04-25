@@ -125,7 +125,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putString("TEXT", uploadProgress);
                 lottieDialogFragment.setArguments(bundle);
-
+                lottieDialogFragment.setCancelable(false);
                 if(lottieDialogFragment.isAdded())
                 {
                     return ; //or return false/true, based on where you are calling from

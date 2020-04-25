@@ -56,6 +56,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:21.4.2'
     //firebase storage
     implementation 'com.google.firebase:firebase-storage:19.1.1'
+    // FirebaseUI for Cloud Firestore
+    implementation 'com.firebaseui:firebase-ui-firestore:6.2.1'
     //facebook
     implementation 'com.facebook.android:facebook-android-sdk:5.15.3'
     //twitter
