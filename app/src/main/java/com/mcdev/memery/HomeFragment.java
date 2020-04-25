@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -111,7 +112,11 @@ public class HomeFragment extends Fragment {
                 }else{
                     holder.imageView.setVisibility(View.VISIBLE);
                     Picasso.get().load(downloadUrl).into(holder.imageView);
+                    holder.typeTextView.setText(".JPG");
                 }
+
+                //setting title
+                holder.titleTextView.setText(title);
             }
         };
         //attaching the adapter to my recycler view
@@ -159,12 +164,15 @@ public class HomeFragment extends Fragment {
         CardView cardView;
         ImageView imageView;
         VideoView videoView;
+        TextView typeTextView, titleTextView;
 
         public MemeHolder(@NonNull View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.home_item_card_view);
             imageView = itemView.findViewById(R.id.home_item_image_view);
             videoView = itemView.findViewById(R.id.home_item_video_view);
+            typeTextView = itemView.findViewById(R.id.home_item_type_text_view);
+            titleTextView = itemView.findViewById(R.id.home_item_title_text_view);
         }
     }
 
