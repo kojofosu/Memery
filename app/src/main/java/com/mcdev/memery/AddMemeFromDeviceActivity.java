@@ -41,7 +41,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private EditText memeCaptionET;
 
-    private LottieDialogFragment lottieDialogFragment=  new LottieDialogFragment();
+//    private LottieDialogFragment lottieDialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,78 +109,17 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
     }
 
     private void postMemeToStorage(String currentUserId, Uri URI, String caption, String selectedType) {
-        //database
-        FirebaseFirestore firebaseFirestore =  FirebaseFirestore.getInstance();     //init firestore
-        DocumentReference documentReference = firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION).document();     //init document
-        String memeID = documentReference.getId();          //generation meme id and storing it in String variable
-        //storage
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        StorageReference memeStorageRef = storageReference.child(StringConstants.STORAGE_MEME_UPLOADS).child(currentUserId).child(memeID);      //meme id was the last child so as to prevent the overriding of uploads
-        memeStorageRef.putFile(URI).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                String uploadProgress = "Uploading..." + progress + "%";
-                Log.d(TAG, uploadProgress);
-                Bundle bundle = new Bundle();
-                bundle.putString("TEXT", uploadProgress);
-                lottieDialogFragment.setArguments(bundle);
-                lottieDialogFragment.setCancelable(false);
-                if(lottieDialogFragment.isAdded())
-                {
-                    return ; //or return false/true, based on where you are calling from
-                }
-                lottieDialogFragment.show(getSupportFragmentManager(),"");
-//                Intent intentToDialog = new Intent(AddMemeFromDeviceActivity.this, LottieDialogFragment.class);
-//                intentToDialog.putExtra("TEXT", uploadProgress);
-//                startActivity(intentToDialog); //Here is the exception
+        LottieDialogFragment lottieDialogFragment = new LottieDialogFragment();
+        lottieDialogFragment.setCancelable(false);
+        Bundle bundle = new Bundle();
+        bundle.putString("URI", String.valueOf(URI));
+        bundle.putString("currentUserId", currentUserId);
+        bundle.putString("caption", caption);
+        bundle.putString("selectedType",selectedType);
+        lottieDialogFragment.setArguments(bundle);
+        lottieDialogFragment.show(getSupportFragmentManager(),"");
 
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                //getting download url of meme
-                memeStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        //Getting current timestamp
-                        Long tsLong = System.currentTimeMillis()/1000;
-
-                        //populating meme upload field
-                        MemeUploads memeUploads = new MemeUploads();
-                        memeUploads.setUploadedBy(currentUserId);
-                        memeUploads.setMemeId(memeID);
-                        memeUploads.setMemeTitle(caption);
-                        memeUploads.setMemeType(selectedType);
-                        memeUploads.setPostedAt(tsLong);
-                        memeUploads.setDownloadUrl(uri.toString());
-                        memeUploads.setPrivate(false);
-
-                        //posting to db
-                        firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION)
-                                .document(memeID)
-                                .set(memeUploads)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        dismissDialogFragment();
-                                        Log.d(TAG, "Upload Success");
-                                        Toast.makeText(AddMemeFromDeviceActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
-                                        finish();
-                                    }
-                                });
-                    }
-                });
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Uploading meme failed with " + e.getLocalizedMessage());
-                Toast.makeText(AddMemeFromDeviceActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void init() {
@@ -248,7 +187,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
 //       lottieDialogFragment.show(getSupportFragmentManager(),"");
 //    }
 
-    private void dismissDialogFragment(){
-        lottieDialogFragment.dismiss();
-    }
+//    private void dismissDialogFragment(){
+//        lottieDialogFragment.dismiss();
+//    }
 }
