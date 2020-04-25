@@ -3,9 +3,12 @@ package com.mcdev.memery;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +82,8 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //first posting the meme to firebase storage to get the download url
+//                Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(URI.getPath(), MediaStore.Video.Thumbnails.MINI_KIND);          //Making a thumbnail
+
                 String caption = memeCaptionET.getText().toString();
                 SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserDetails", MODE_PRIVATE);
                 String eyeDee = sharedPreferences.getString("userID", null);

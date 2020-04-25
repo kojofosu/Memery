@@ -6,9 +6,18 @@ public class MemeUploads {
     private String memeType;
     private String uploadedBy;
     private String downloadUrl;
+    private String thumbnail;
     private boolean isPrivate;
     private long postedAt;
     private long updatedAt;
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
 
     public String getMemeId() {
         return memeId;

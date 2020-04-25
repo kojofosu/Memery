@@ -21,6 +21,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -107,6 +109,14 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, "isPrivate from db : " + isPrivate);
 
                 if (type.equals("video")){
+                    holder.imageView.setVisibility(View.VISIBLE);
+                    holder.typeTextView.setText(".MP4");
+                    long interval = 5000 * 1000;
+                    RequestOptions options = new RequestOptions().frame(interval);
+                    Glide.with(getContext()).asBitmap()
+                            .load(downloadUrl)
+                            .apply(options)
+                            .into(holder.imageView);
 //                    holder.videoView.setVisibility(View.VISIBLE);
 //                    holder.videoView.setVideoURI(Uri.parse(downloadUrl));
                 }else{

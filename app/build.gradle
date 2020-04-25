@@ -92,5 +92,8 @@ dependencies {
     implementation 'com.github.kotvertolet:youtube-jextractor:v0.2.5'
     //video cache
     implementation 'com.vincan:medialoader:1.0.0'
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
 }
