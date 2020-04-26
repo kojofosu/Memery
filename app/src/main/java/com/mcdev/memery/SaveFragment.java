@@ -253,10 +253,10 @@ public class SaveFragment extends Fragment {
                                     .showProgress(Flashbar.ProgressPosition.LEFT)
                                     //.duration(Flashbar.DURATION_INDEFINITE)       //commented this because it will crash...to make duration indefinite, don't call duration()
                                     .enableSwipeToDismiss()
-                                    .backgroundDrawable(R.drawable.flash_bar_gradient)
+                                    .backgroundDrawable(R.drawable.twitterbg)
                                     .build();
                             progressFlashBar.show();
-                            downloadVideo(getUrl,getfileName, getMimeType);        //download video
+                            downloadTwitterVideo(getUrl,getfileName, getMimeType);        //download video
                         }
 
                         @Override
@@ -306,10 +306,10 @@ public class SaveFragment extends Fragment {
                                     .showProgress(Flashbar.ProgressPosition.LEFT)
                                     //.duration(Flashbar.DURATION_INDEFINITE)       //commented this because it will crash...to make duration indefinite, don't call duration()
                                     .enableSwipeToDismiss()
-                                    .backgroundDrawable(R.drawable.flash_bar_gradient)
+                                    .backgroundDrawable(R.drawable.twitterbg)
                                     .build();
                             progressFlashBar.show();
-                            downloadVideo(getUrl,getfileName, getMimeType);        //download video
+                            downloadTwitterVideo(getUrl,getfileName, getMimeType);        //download video
 
                         }
 
@@ -336,8 +336,8 @@ public class SaveFragment extends Fragment {
         });
     }
 
-    /*download video*/
-    private void downloadVideo(String url, final String filename, @Nullable String mimeType) {
+    /*download twitter video*/
+    private void downloadTwitterVideo(String url, final String filename, @Nullable String mimeType) {
         File dir = new File(Environment.DIRECTORY_DOWNLOADS + "/Memeries");     //creating memeries custom directory
         if (!dir.exists()) {
             dir.mkdirs();       // creates needed dirs
@@ -376,7 +376,7 @@ public class SaveFragment extends Fragment {
                         .message("Download complete")
                         .duration(5000)
                         .enableSwipeToDismiss()
-                        .backgroundDrawable(R.drawable.flash_bar_gradient)
+                        .backgroundDrawable(R.drawable.twitterbg)
                         .vibrateOn(Flashbar.Vibration.SHOW, Flashbar.Vibration.DISMISS)
                         .build();
                 flashbar.show();
@@ -403,6 +403,75 @@ public class SaveFragment extends Fragment {
 
 
     }
+
+    /*download youtube video*/
+    private void downloadYoutubeVideo(String url, final String filename, @Nullable String mimeType) {
+        File dir = new File(Environment.DIRECTORY_DOWNLOADS + "/Memeries");     //creating memeries custom directory
+        if (!dir.exists()) {
+            dir.mkdirs();       // creates needed dirs
+        }
+        String downloadDestination = String.valueOf(dir);       //getting the string equivalent of the path to be passed to rxDownloader
+        Log.d("TAG", "downloadDestination : " + downloadDestination);
+
+
+
+        final RxDownloader rxDownloader = new RxDownloader(getContext());     //init RxDownloader
+        rxDownloader.download(url, filename, downloadDestination, mimeType, true)
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(Disposable d) { ;
+                        Log.d("TAG", "subscribe onSubscribe " + d.isDisposed());        //returns true if subscriber is disposed
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        Log.d("TAG", "subscribe onNext " + s);      //This returns the file path of the downloaded file
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("TAG", "subscribe onError " + e.getLocalizedMessage());       //get error message
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("TAG", "subscribe onComplete " );         //download complete
+                        tweetUrlET.setText("");     //clearing the url from the edit text when download is complete
+                        downloadLottieAnimationView.setEnabled(true);       //enabling the download button
+                        progressFlashBar.dismiss();
+                        Flashbar flashbar = new Flashbar.Builder(getActivity())
+                                .gravity(Flashbar.Gravity.TOP)
+                                .message("Download complete")
+                                .duration(5000)
+                                .enableSwipeToDismiss()
+                                .backgroundDrawable(R.drawable.youtubebg)
+                                .vibrateOn(Flashbar.Vibration.SHOW, Flashbar.Vibration.DISMISS)
+                                .build();
+                        flashbar.show();
+
+                        //timer to refresh page to unregister from the downloader {This is temporary}
+                        final int interval = 6000;      // 1 Second before the item enables again for user to be able to click
+                        Handler handler = new Handler();
+                        Runnable runnable = new Runnable() {
+                            public void run() {
+                                Intent intent = getActivity().getIntent();
+                                getActivity().overridePendingTransition(0, 0);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                getActivity().finish();
+                                getActivity().overridePendingTransition(0, 0);
+                                startActivity(intent);
+                            }
+                        };
+                        handler.postAtTime(runnable, System.currentTimeMillis() + interval);        //chip enabler handler
+                        handler.postDelayed(runnable, interval);
+                    }
+                });
+
+
+    }
+
 
     private void init(@NotNull View view ) {
         tweetUrlET = view.findViewById(R.id.tweetD_url);
@@ -501,10 +570,10 @@ public class SaveFragment extends Fragment {
                                     .showProgress(Flashbar.ProgressPosition.LEFT)
                                     //.duration(Flashbar.DURATION_INDEFINITE)       //commented this because it will crash...to make duration indefinite, don't call duration()
                                     .enableSwipeToDismiss()
-                                    .backgroundDrawable(R.drawable.flash_bar_gradient)
+                                    .backgroundDrawable(R.drawable.youtubebg)
                                     .build();
                             progressFlashBar.show();
-                            downloadVideo(muxedUrl, filename, "video/*");;        //download video
+                            downloadYoutubeVideo(muxedUrl, filename, "video/*");;        //download video
                         }
 
                         @Override
