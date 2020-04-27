@@ -67,13 +67,17 @@ public class LottieDialogFragment extends DialogFragment {
             dialogType = bundle.getString("dialogType", "");
             if (dialogType.equals(String.valueOf(StringConstants.DialogType.SIGN_IN))){
                 Log.d(TAG, "dialog type : " + dialogType + " equals " + StringConstants.DialogType.SIGN_IN);
+                textView.setText(R.string.signing_in);      //set custom dialog text view
+            } else if (dialogType.equals(String.valueOf(StringConstants.DialogType.SIGN_OUT))) {
+                Log.d(TAG, "dialog type : " + dialogType + " equals " + StringConstants.DialogType.SIGN_IN);
+                textView.setText(R.string.signing_out);      //set custom dialog text view
             } else if (dialogType.equals(String.valueOf(StringConstants.DialogType.UPLOAD_FILES))) {
                 Log.d(TAG, "dialog type : " + dialogType + " equals " + StringConstants.DialogType.UPLOAD_FILES);
 
-                currentUserId = bundle.getString("currentUserId","");       //getting the current user's id
-                caption = bundle.getString("caption","");       //getting the caption
-                selectedType = bundle.getString("selectedType","");     //getting the selected item type
-                URI = bundle.getString("URI","");       //getting the uri
+                currentUserId = bundle.getString("currentUserId", "");       //getting the current user's id
+                caption = bundle.getString("caption", "");       //getting the caption
+                selectedType = bundle.getString("selectedType", "");     //getting the selected item type
+                URI = bundle.getString("URI", "");       //getting the uri
                 //Start file upload to storage
                 startFileUpload(currentUserId, caption, selectedType, URI);
             }

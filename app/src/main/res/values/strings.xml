@@ -11,4 +11,6 @@
     <string name="log_out">Logout</string>
     <string name="cancel">Cancel</string>
     <string name="fetching">Fetching...</string>
+    <string name="signing_in">Signing in...</string>
+    <string name="signing_out">signing out...</string>
 </resources>

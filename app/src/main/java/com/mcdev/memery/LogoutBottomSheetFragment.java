@@ -22,10 +22,13 @@ import com.facebook.login.LoginManager;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mcdev.memery.General.GetIntents;
+import com.mcdev.memery.General.StringConstants;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 
 /**
@@ -37,6 +40,8 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
     private Button confirmLogoutBtn, cancelLogoutBtn;
     private FirebaseAuth firebaseAuth;
     private SharedPreferences sharedPreferences;
+    LottieDialogFragment lottieDialogFragment;
+
     public LogoutBottomSheetFragment() {
         // Required empty public constructor
     }
@@ -51,6 +56,11 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
         //init
         init(view);
 
+        //init custom dialog
+        lottieDialogFragment = new LottieDialogFragment();
+        //sharedPrefs
+        sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
+
         //init Firebase stuff
         initFirebaseStuff();
 
@@ -58,8 +68,7 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
         confirmLogoutListener();
         cancelLogoutListener();
 
-        //sharedPrefs
-        sharedPreferences = getContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
+
         return view;
     }
 
@@ -76,6 +85,14 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
         confirmLogoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                /*configure and show custom dialog progress*/
+                lottieDialogFragment.setCancelable(false);
+                Bundle bundle = new Bundle();
+                bundle.putString("dialogType", String.valueOf(StringConstants.DialogType.SIGN_OUT));
+                lottieDialogFragment.setArguments(bundle);
+                assert getFragmentManager() != null;
+                lottieDialogFragment.show(getFragmentManager(),"");
+
                 // continue with logout
                 try {
                     //checking to see if user is logged in with twitter or facebook
@@ -89,8 +106,6 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
                             public void onCompleted(GraphResponse response) {
                                 LoginManager.getInstance().logOut();        //Log user out of facebook
                                 firebaseAuth.signOut();     //log user out of firebase
-                                sharedPreferences.edit().clear();    //clearing data in shared preference
-                                sharedPreferences.edit().apply();       //applying changes
                                 SendUserToLoginActivity(view);      //send the user to login page
                             }
                         }).executeAsync();      //execute permission deletion
@@ -99,8 +114,6 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
                         //then log user out of twitter
                         TwitterCore.getInstance().getSessionManager().clearActiveSession();     //clearing current user session
                         firebaseAuth.signOut();     //log user out of firebase
-                        sharedPreferences.edit().clear();    //clearing data in shared preference
-                        sharedPreferences.edit().apply();       //applying changes
                         SendUserToLoginActivity(view);      //send the user to login page
                     }
 
@@ -113,9 +126,12 @@ public class LogoutBottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void SendUserToLoginActivity(View view) {
-        GetIntents getIntents = new GetIntents();
-        getIntents.goToLogin(getActivity());
-        getActivity().finish();
+        sharedPreferences.edit().clear();    //clearing data in shared preference
+        sharedPreferences.edit().apply();       //applying changes
+        GetIntents getIntents = new GetIntents();       //init  getIntents
+        lottieDialogFragment.dismiss();     //dismiss dialog
+        getIntents.goToLogin(getActivity());        //start intent
+        getActivity().finish();         //finish
     }
 
     private boolean isUserLoggedInWithFacebook(){

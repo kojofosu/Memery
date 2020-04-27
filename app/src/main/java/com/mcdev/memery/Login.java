@@ -73,6 +73,8 @@ public class Login extends AppCompatActivity {
 
     MediaLoader mediaLoader;
 
+    LottieDialogFragment lottieDialogFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +82,9 @@ public class Login extends AppCompatActivity {
 
         //init
         init();
+
+        //init custom dialog
+        lottieDialogFragment = new LottieDialogFragment();
 
         //init firebase stuff
         initFirebase();
@@ -225,6 +230,14 @@ public class Login extends AppCompatActivity {
         twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
+                /*configure and show custom dialog progress*/
+                lottieDialogFragment.setCancelable(false);
+                Bundle bundle = new Bundle();
+                bundle.putString("dialogType", String.valueOf(StringConstants.DialogType.SIGN_IN));
+                lottieDialogFragment.setArguments(bundle);
+                assert getFragmentManager() != null;
+                lottieDialogFragment.show(getSupportFragmentManager(),"");
+
                 Log.d(TAG, "onSuccessTwitterLogin: " + result);
                 //saving user to firebase auth
                 TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
@@ -264,6 +277,7 @@ public class Login extends AppCompatActivity {
                                                         Log.d(TAG, "onSuccessFirestoreLogin: " + aVoid);
                                                         //go to home page
                                                         getIntents.goToHome(Login.this);
+                                                        lottieDialogFragment.dismiss();         //dismiss custom dialog
                                                         Login.this.finish();
                                                         Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
                                                     }
@@ -274,6 +288,7 @@ public class Login extends AppCompatActivity {
                                     Log.d(TAG, "old user logged in");
                                     //go to home page
                                     getIntents.goToHome(Login.this);
+                                    lottieDialogFragment.dismiss();         //dismiss custom dialog
                                     Login.this.finish();
                                     Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
                                 }
@@ -282,6 +297,8 @@ public class Login extends AppCompatActivity {
                         }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        lottieDialogFragment.dismiss();         //dismiss custom dialog
+                        Toast.makeText(Login.this, "Error Occurred", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "onFailureFirebaseLogin: " + e.getMessage() + "\n caused by : " + e.getCause());
                     }
                 });
@@ -290,6 +307,8 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void failure(TwitterException exception) {
+                lottieDialogFragment.dismiss();         //dismiss custom dialog
+                Toast.makeText(Login.this, "Error Occurred", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onErrorTwitterLogin: " + exception.getMessage() + "\n caused by :" + exception.getCause());
             }
         });
@@ -302,6 +321,14 @@ public class Login extends AppCompatActivity {
         facebookLoginButton.registerCallback(facebookCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                /*configure and show custom dialog progress*/
+                lottieDialogFragment.setCancelable(false);
+                Bundle bundle = new Bundle();
+                bundle.putString("dialogType", String.valueOf(StringConstants.DialogType.SIGN_IN));
+                lottieDialogFragment.setArguments(bundle);
+                assert getFragmentManager() != null;
+                lottieDialogFragment.show(getSupportFragmentManager(),"");
+
                 Log.d(TAG, "onSuccessFacebookLogin: " + loginResult);
                 //saving user to firebase auth
                 AccessToken accessToken = loginResult.getAccessToken();
@@ -367,11 +394,15 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void onCancel() {
+                lottieDialogFragment.dismiss();         //dismiss custom dialog
+                Toast.makeText(Login.this, "Error Occurred", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onCancelFacebookLogin: " + "Log in cancelled");
             }
 
             @Override
             public void onError(FacebookException error) {
+                lottieDialogFragment.dismiss();         //dismiss custom dialog
+                Toast.makeText(Login.this, "Error Occurred", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onErrorFacebookLogin: " + error.getMessage() + "\n caused by :" + error.getCause());
             }
         });
