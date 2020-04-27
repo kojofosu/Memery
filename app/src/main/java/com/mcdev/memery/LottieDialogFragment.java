@@ -53,19 +53,37 @@ public class LottieDialogFragment extends DialogFragment {
 
         textView = view.findViewById(R.id.progress_dialog_message);     //init text view
 
+        /*Checking if Dialog type will be COMPLEX or SIMPLE*/
+
+
         /*Handling the download here because the dialog fragment crashes when i try to pass the upload progress to the the fragment from the activity*/
         Bundle bundle = getArguments();     //getting the arguments passed from the activity
         String URI = null;
         String selectedType = null;
         String currentUserId = null;
         String caption = null;
+        String dialogType = null;
         if (bundle != null) {
-            currentUserId = bundle.getString("currentUserId","");       //getting the current user's id
-            caption = bundle.getString("caption","");       //getting the caption
-            selectedType = bundle.getString("selectedType","");     //getting the selected item type
-            URI = bundle.getString("URI","");       //getting the uri
+            dialogType = bundle.getString("dialogType", "");
+            if (dialogType.equals(String.valueOf(StringConstants.DialogType.SIGN_IN))){
+                Log.d(TAG, "dialog type : " + dialogType + " equals " + StringConstants.DialogType.SIGN_IN);
+            } else if (dialogType.equals(String.valueOf(StringConstants.DialogType.UPLOAD_FILES))) {
+                Log.d(TAG, "dialog type : " + dialogType + " equals " + StringConstants.DialogType.UPLOAD_FILES);
+
+                currentUserId = bundle.getString("currentUserId","");       //getting the current user's id
+                caption = bundle.getString("caption","");       //getting the caption
+                selectedType = bundle.getString("selectedType","");     //getting the selected item type
+                URI = bundle.getString("URI","");       //getting the uri
+                //Start file upload to storage
+                startFileUpload(currentUserId, caption, selectedType, URI);
+            }
+
         }
 
+        return view;
+    }
+
+    private void startFileUpload(String currentUserId, String caption, String selectedType, String URI) {
         //database
         FirebaseFirestore firebaseFirestore =  FirebaseFirestore.getInstance();     //init firestore
         DocumentReference documentReference = firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION).document();     //init document
@@ -73,9 +91,7 @@ public class LottieDialogFragment extends DialogFragment {
         //storage
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         StorageReference memeStorageRef = storageReference.child(StringConstants.STORAGE_MEME_UPLOADS).child(currentUserId).child(memeID);      //meme id was the last child so as to prevent the overriding of uploads
-        String finalCurrentUserId = currentUserId;
-        String finalCaption = caption;
-        String finalSelectedType = selectedType;
+
         memeStorageRef.putFile(Uri.parse(URI)).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
@@ -99,10 +115,10 @@ public class LottieDialogFragment extends DialogFragment {
 
                         //populating meme upload field
                         MemeUploads memeUploads = new MemeUploads();
-                        memeUploads.setUploadedBy(finalCurrentUserId);
+                        memeUploads.setUploadedBy(currentUserId);
                         memeUploads.setMemeId(memeID);
-                        memeUploads.setMemeTitle(finalCaption);
-                        memeUploads.setMemeType(finalSelectedType);
+                        memeUploads.setMemeTitle(caption);
+                        memeUploads.setMemeType(selectedType);
                         memeUploads.setPostedAt(tsLong);
                         memeUploads.setDownloadUrl(uri.toString());
                         memeUploads.setPrivate(false);
@@ -131,7 +147,6 @@ public class LottieDialogFragment extends DialogFragment {
                 Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
             }
         });
-        return view;
     }
 
     @Override

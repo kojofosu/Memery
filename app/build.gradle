@@ -70,9 +70,9 @@ dependencies {
     implementation 'com.github.jgabrielfreitas:BlurImageView:1.0.1'
     //picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
-    //RxDownloader for twitter
+    //RxDownloader
     implementation 'com.github.esafirm:rxdownloader:2.0.0'
-    implementation 'com.github.oussaki:RxDownloader:0.3'
+//    implementation 'com.github.oussaki:RxDownloader:0.3'
     //flash bar
     implementation 'com.andrognito.flashbar:flashbar:1.0.3'
     //bottom sheets

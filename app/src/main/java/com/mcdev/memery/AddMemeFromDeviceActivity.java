@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.VideoView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mcdev.memery.General.StringConstants;
 import com.squareup.picasso.Picasso;
 
 public class AddMemeFromDeviceActivity extends AppCompatActivity {
@@ -82,8 +83,6 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //first posting the meme to firebase storage to get the download url
-//                Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(URI.getPath(), MediaStore.Video.Thumbnails.MINI_KIND);          //Making a thumbnail
-
                 String caption = memeCaptionET.getText().toString();
                 SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserDetails", MODE_PRIVATE);
                 String eyeDee = sharedPreferences.getString("userID", null);
@@ -103,6 +102,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         LottieDialogFragment lottieDialogFragment = new LottieDialogFragment();
         lottieDialogFragment.setCancelable(false);
         Bundle bundle = new Bundle();
+        bundle.putString("dialogType", String.valueOf(StringConstants.DialogType.UPLOAD_FILES));
         bundle.putString("URI", String.valueOf(URI));
         bundle.putString("currentUserId", currentUserId);
         bundle.putString("caption", caption);
