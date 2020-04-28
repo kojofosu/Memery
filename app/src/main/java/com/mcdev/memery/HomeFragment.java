@@ -1,5 +1,7 @@
 package com.mcdev.memery;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -158,16 +161,15 @@ public class HomeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PickMeme && resultCode == RESULT_OK){
             Uri theUri = data.getData();
-            String mimeType = data.getType();
+            //String mimeType = data.getType();
+            String mimeType = getMimeType(getContext(), theUri);
             String path = data.getData().getPath();
             Log.e(TAG, "URI : " + theUri.toString());
             Log.e(TAG, "MIME_TYPE : " + mimeType);
             Log.e(TAG, "PATH : " + path);
             //sending the details to the next activity
             Intent intent = new Intent(getContext(), AddMemeFromDeviceActivity.class);
-            intent.putExtra("URI", theUri);
-            intent.putExtra("MIME_TYPE", mimeType);
-            intent.putExtra("PATH", path);
+            intent.setDataAndType(theUri, mimeType);
             startActivity(intent);
         }
     }
@@ -189,4 +191,18 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /*get mime type of content or file that was selected*/
+    public String getMimeType(Context context, Uri uri) {
+        String mimeType = null;
+        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+            ContentResolver cr = context.getContentResolver();
+            mimeType = cr.getType(uri);
+        } else {
+            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
+                    .toString());
+            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                    fileExtension.toLowerCase());
+        }
+        return mimeType;
+    }
 }
