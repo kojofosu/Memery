@@ -28,6 +28,8 @@ import com.mcdev.memery.POJOS.MemeUploads;
 
 import java.util.Objects;
 
+import spencerstudios.com.bungeelib.Bungee;
+
 public class LottieDialogFragment extends DialogFragment {
 
     private static final String TAG = LottieDialogFragment.class.getSimpleName();
@@ -138,6 +140,7 @@ public class LottieDialogFragment extends DialogFragment {
                                         Log.d(TAG, "Upload Success");
                                         Toast.makeText(getContext(), "Upload Success", Toast.LENGTH_SHORT).show();
                                         Objects.requireNonNull(getActivity()).finish();     //finish the activity from which the dialog fragment resides(AddMemeFromDeviceActivity)
+                                        Bungee.zoom(getActivity());
                                     }
                                 });
                     }

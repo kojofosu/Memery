@@ -1,8 +1,10 @@
 package com.mcdev.memery;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,24 +22,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.mcdev.memery.General.StringConstants;
 import com.mcdev.memery.POJOS.MemeUploads;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
+import spencerstudios.com.bungeelib.Bungee;
+
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class HomeFragment extends Fragment {
@@ -120,8 +130,6 @@ public class HomeFragment extends Fragment {
                             .load(downloadUrl)
                             .apply(options)
                             .into(holder.imageView);
-//                    holder.videoView.setVisibility(View.VISIBLE);
-//                    holder.videoView.setVideoURI(Uri.parse(downloadUrl));
                 }else{
                     holder.imageView.setVisibility(View.VISIBLE);
                     Picasso.get().load(downloadUrl).into(holder.imageView);
@@ -130,6 +138,12 @@ public class HomeFragment extends Fragment {
 
                 //setting title
                 holder.titleTextView.setText(title);
+
+                //item onClick
+                holderItemClick(holder, position, model);
+
+                //item onLongClick
+                holderItemLongClick(holder, position, model);
             }
         };
         //attaching the adapter to my recycler view
@@ -137,6 +151,56 @@ public class HomeFragment extends Fragment {
 
     }
 
+    private void holderItemLongClick(MemeHolder holder, int position, MemeUploads model) {
+        /*getting current user id from shared preferences*/
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserDetails", MODE_PRIVATE);
+        String currentUserId = sharedPreferences.getString("userID", null);
+        Log.d(TAG, "currentUserID " + currentUserId);
+        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                String documentPath = model.getMemeId();        //getting the meme id which is same as the media name in storage
+                holder.lottieAnimationView.setVisibility(View.VISIBLE);
+                holder.lottieAnimationView.playAnimation();
+                holder.lottieAnimationView.setOnClickListener(view1 -> {
+                    FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();      //init firebase firestore
+                    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();        //init firebase storage
+                    StorageReference storageReference = firebaseStorage.getReference();      //init base storage reference
+                    assert currentUserId != null;
+                    /*storage ref to be deleted*/
+                    StorageReference refToDeleteStorage = storageReference
+                            .child(StringConstants.STORAGE_MEME_UPLOADS)
+                            .child(currentUserId)
+                            .child(documentPath);
+
+                    firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION).document(documentPath).delete()
+                            .addOnSuccessListener(aVoid -> {
+                                /*delete media from firebase storage as well*/
+                                refToDeleteStorage.delete().addOnSuccessListener(aVoid1 -> {
+                                    Log.d(TAG, "Deleted Successfully");
+                                    Toast.makeText(getApplicationContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                                });
+
+                            })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Deleting failed : " + e.getLocalizedMessage());
+                        Toast.makeText(getContext(), "Failed to Delete", Toast.LENGTH_SHORT).show();
+                    });
+                });
+                return true;
+            }
+        });
+    }
+
+    private void holderItemClick(MemeHolder holder, int position, MemeUploads model) {
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), TestActiviry.class));
+                Bungee.slideDown(getActivity());
+            }
+        });
+    }
 
 
     private void fabListener() {
@@ -180,6 +244,7 @@ public class HomeFragment extends Fragment {
         ImageView imageView;
         VideoView videoView;
         TextView typeTextView, titleTextView;
+        LottieAnimationView lottieAnimationView;
 
         public MemeHolder(@NonNull View itemView) {
             super(itemView);
@@ -188,6 +253,7 @@ public class HomeFragment extends Fragment {
             videoView = itemView.findViewById(R.id.home_item_video_view);
             typeTextView = itemView.findViewById(R.id.home_item_type_text_view);
             titleTextView = itemView.findViewById(R.id.home_item_title_text_view);
+            lottieAnimationView = itemView.findViewById(R.id.home_item_delete_lottie);
         }
     }
 

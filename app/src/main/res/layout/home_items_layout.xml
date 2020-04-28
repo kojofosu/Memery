@@ -28,17 +28,20 @@
             android:layout_height="match_parent"
             android:visibility="gone"/>
 
+    <!--item type jpg or mp4-->
     <TextView
         android:id="@+id/home_item_type_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start|top"
         android:gravity="top"
+        android:hint="type"
         android:layout_margin="10dp"
         android:background="@drawable/rounded_corner_view"
         android:textColor="@android:color/white"
         android:textSize="10sp"/>
 
+    <!--item title or caption-->
     <TextView
         android:id="@+id/home_item_title_text_view"
         android:layout_width="match_parent"
@@ -52,4 +55,14 @@
         android:textColor="@android:color/white"
         android:singleLine="true"
         android:ellipsize="end"/>
+
+    <!--onLongClick items-->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/home_item_delete_lottie"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        app:lottie_rawRes="@raw/delete_red"
+        android:background="@color/white"
+        android:visibility="gone"/>
 </androidx.cardview.widget.CardView>
