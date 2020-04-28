@@ -158,12 +158,15 @@ public class HomeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PickMeme && resultCode == RESULT_OK){
             Uri theUri = data.getData();
+            String mimeType = data.getType();
             String path = data.getData().getPath();
             Log.e(TAG, "URI : " + theUri.toString());
+            Log.e(TAG, "MIME_TYPE : " + mimeType);
             Log.e(TAG, "PATH : " + path);
             //sending the details to the next activity
             Intent intent = new Intent(getContext(), AddMemeFromDeviceActivity.class);
             intent.putExtra("URI", theUri);
+            intent.putExtra("MIME_TYPE", mimeType);
             intent.putExtra("PATH", path);
             startActivity(intent);
         }

@@ -147,6 +147,7 @@ public class LottieDialogFragment extends DialogFragment {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                Objects.requireNonNull(getDialog()).dismiss();      //dismiss this dialgo fragment after upload success
                 Log.e(TAG, "Uploading meme failed with " + e.getLocalizedMessage());
                 Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
             }

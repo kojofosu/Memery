@@ -2,6 +2,7 @@ package com.mcdev.memery;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -18,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.VideoView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mcdev.memery.General.GetIntents;
 import com.mcdev.memery.General.StringConstants;
 import com.squareup.picasso.Picasso;
 
@@ -25,7 +27,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
 
     private static final String TAG = AddMemeFromDeviceActivity.class.getSimpleName();
     private Uri URI;
-    private String PATH;
+    private String PATH, MIME_TYPE;
     ImageView imageView;
     VideoView videoView;
     private FloatingActionButton fab;
@@ -47,25 +49,66 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         /*Getting string extras*/
         URI = (Uri) getIntent().getExtras().get("URI");
         Log.d(TAG, "URI : " + URI);
+        MIME_TYPE = (String) getIntent().getExtras().get("MIME_TYPE");
+        Log.d(TAG, "MIME_TYPE : " + MIME_TYPE);
         PATH = (String) getIntent().getExtras().get("PATH");
         Log.d(TAG, "PATH : " + PATH);
 
         String selectedType = null;        //to get the type of content that was selected either an image or video file
+//
+//        if (PATH.contains("/video/")) {
+////        if (MIME_TYPE.contains("video/") || getIntent().getType().contains("video/")) {
+//            Log.d(this.getClass().getName(), "Video");
+//            imageView.setVisibility(View.GONE);             //setting image view invisible
+//            videoView.setVisibility(View.VISIBLE);      //setting video view visible
+//            selectedType = "video";
+//            loadVideoVideo(URI);        //load video
+//        } else if (PATH.contains("/images/")) {
+//            Log.d(this.getClass().getName(), "Image");
+//            videoView.setVisibility(View.GONE);         //setting video view invisible
+//            imageView.setVisibility(View.VISIBLE);      //setting image view visible
+//            selectedType = "image/gif";     //image or gif
+//            Picasso.get().load(URI).into(imageView);        //load image with picasso
+//        }
 
-        if (PATH.contains("/video/")) {
-            Log.d(this.getClass().getName(), "Video");
-            imageView.setVisibility(View.GONE);             //setting image view invisible
-            videoView.setVisibility(View.VISIBLE);      //setting video view visible
-            selectedType = "video";
-            loadVideoVideo(URI);        //load video
-        } else if (PATH.contains("/images/")) {
-            Log.d(this.getClass().getName(), "Image");
-            videoView.setVisibility(View.GONE);         //setting video view invisible
-            imageView.setVisibility(View.VISIBLE);      //setting image view visible
-            selectedType = "image/gif";
-            Picasso.get().load(URI).into(imageView);        //load image with picasso
+
+
+
+        //getting data from share
+        Intent shareIntent = getIntent();
+        String action = shareIntent.getAction();
+        String type = shareIntent.getType();
+        Uri uri = (Uri) shareIntent.getParcelableExtra(Intent.EXTRA_STREAM);
+        if ("android.intent.action.SEND".equals(action) && type != null) {
+
+            if (type.startsWith("image/")){
+                if (uri != null) {
+                    Log.println(Log.ASSERT,"shareableUriExtra", String.valueOf(uri));
+                    videoView.setVisibility(View.GONE);         //setting video view invisible
+                    imageView.setVisibility(View.VISIBLE);      //setting image view visible
+                    selectedType = "image/gif";     //image or gif
+                    Picasso.get().load(uri).into(imageView);        //load image with picasso
+                }
+                Log.d(TAG, "action : " + action);
+                Log.d(TAG, "type : " + type);
+                Log.d(TAG, "uri : " + uri);
+            } else if (type.startsWith("video/")) {
+                if (uri != null) {
+                    Log.d(this.getClass().getName(), "Video");
+                    imageView.setVisibility(View.GONE);             //setting image view invisible
+                    videoView.setVisibility(View.VISIBLE);      //setting video view visible
+                    selectedType = "video";
+                    loadVideoVideo(uri);        //load video
+                }
+                Log.d(TAG, "action : " + action);
+                Log.d(TAG, "type : " + type);
+                Log.d(TAG, "uri : " + uri);
+            }
+
+
         }
 
+        /*this code needed to come below the above codes to be able to set selectedType to a value and not render it null*/
         //listeners
         if (selectedType != null){
             Log.d(TAG, "meme type " + selectedType);
@@ -73,8 +116,6 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         }else{
             Log.e(TAG, "No content selected");
         }
-
-
 
     }
 

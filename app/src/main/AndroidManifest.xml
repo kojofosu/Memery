@@ -14,7 +14,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddMemeFromDeviceActivity"></activity>
+        <!--add meme from device activity-->
+        <activity android:name=".AddMemeFromDeviceActivity">
+            <!--intent filter to get image when they are shared from the device's gallery app-->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="image/*"/>
+            </intent-filter>
+            <!--intent filter to get video when they are shared from the device's gallery app-->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="video/*"/>
+            </intent-filter>
+        </activity>
         <!-- Login activity -->
         <activity android:name=".Login">
             <intent-filter>
@@ -22,22 +36,24 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Home activity -->
+        </activity>
+        <!-- Home activity -->
         <activity android:name=".Home">
+            <!--intent filter to get links when the share button is pressed-->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="text/plain" />
             </intent-filter>
-        </activity> <!-- facebook meta -->
+        </activity>
+        <!-- facebook meta -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
         <meta-data
             android:name="com.facebook.sdk.AutoInitEnabled"
-            android:value="false" /> <!-- facebook chrome custom tab -->
+            android:value="false" />
+        <!-- facebook chrome custom tab -->
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">
