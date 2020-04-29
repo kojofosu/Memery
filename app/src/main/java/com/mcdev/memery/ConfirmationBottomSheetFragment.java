@@ -3,6 +3,7 @@ package com.mcdev.memery;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -116,8 +117,12 @@ public class ConfirmationBottomSheetFragment extends BottomSheetDialogFragment {
 
             firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION).document(documentPath).delete()
                     .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "Deleted Successfully from database");
                         /*delete media from firebase storage as well*/
-                        refToDeleteStorage.delete().addOnSuccessListener(aVoid1 -> Log.d(TAG, "Deleted Successfully"));
+                        refToDeleteStorage.delete().addOnSuccessListener(aVoid1 -> {
+                            Log.d(TAG, "Deleted Successfully from storage");
+
+                        });
 
                     })
                     .addOnFailureListener(e -> {

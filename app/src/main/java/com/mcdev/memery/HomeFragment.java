@@ -27,6 +27,9 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.andrognito.flashbar.Flashbar;
+import com.andrognito.flashbar.anim.FlashAnim;
+import com.andrognito.flashbar.anim.FlashAnimIconBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -43,6 +46,8 @@ import com.mcdev.memery.POJOS.MemeUploads;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 import spencerstudios.com.bungeelib.Bungee;
 
@@ -160,16 +165,40 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onLongClick(View view) {
                 String documentPath = model.getMemeId();        //getting the meme id which is same as the media name in storage
-                //inflating bottom sheet delete confirmation
-                ConfirmationBottomSheetFragment confirmationBottomSheetFragment = new ConfirmationBottomSheetFragment();
-                Bundle bundle = new Bundle();       // init bundle to pass data
-                bundle.putString("confirmationDialogType", String.valueOf(StringConstants.ConfirmationDialog.CONFIRM_DELETE));
-                bundle.putString("currentUserId", currentUserId);
-                bundle.putString("documentPath", documentPath);
-                confirmationBottomSheetFragment.setArguments(bundle);
-                if (getFragmentManager() != null) {
-                    confirmationBottomSheetFragment.show(getFragmentManager(), confirmationBottomSheetFragment.getTag());
+                String uploadedBy = model.getUploadedBy();          //getting the id of user who posted the meme to avoid unauthorized users from being able to delete it
+                /*checking to see if current user is the one who posted the meme*/
+                assert currentUserId != null;
+                if (!currentUserId.equals(uploadedBy)){
+                    Flashbar progressFlashBar = new Flashbar.Builder(Objects.requireNonNull(getActivity()))
+                            .gravity(Flashbar.Gravity.TOP)
+                            .title("Cannot delete.")
+                            .message("Post belongs to someone else")
+                            .duration(2000L)
+                            .showIcon()
+                            .icon(R.drawable.ic_warning_24dp)
+                            .iconColorFilterRes(R.color.yellow)
+                            .iconAnimation(FlashAnim.with(getActivity()).animateIcon()
+                            .pulse()
+                            .alpha()
+                            .duration(750)
+                            .accelerate())
+                            .enableSwipeToDismiss()
+                            .backgroundDrawable(R.drawable.deleted_bg)
+                            .build();
+                    progressFlashBar.show();
+                }else {
+                    //inflating bottom sheet delete confirmation
+                    ConfirmationBottomSheetFragment confirmationBottomSheetFragment = new ConfirmationBottomSheetFragment();
+                    Bundle bundle = new Bundle();       // init bundle to pass data
+                    bundle.putString("confirmationDialogType", String.valueOf(StringConstants.ConfirmationDialog.CONFIRM_DELETE));
+                    bundle.putString("currentUserId", currentUserId);
+                    bundle.putString("documentPath", documentPath);
+                    confirmationBottomSheetFragment.setArguments(bundle);
+                    if (getFragmentManager() != null) {
+                        confirmationBottomSheetFragment.show(getFragmentManager(), confirmationBottomSheetFragment.getTag());
+                    }
                 }
+
                 return true;
             }
         });
@@ -180,7 +209,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), TestActiviry.class));
-                Bungee.slideDown(getActivity());
+                Bungee.slideUp(Objects.requireNonNull(getActivity()));
             }
         });
     }

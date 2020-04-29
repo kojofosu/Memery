@@ -10,6 +10,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 
+import spencerstudios.com.bungeelib.Bungee;
+
 public class TestActiviry extends AppCompatActivity {
 
     @Override
@@ -29,4 +31,9 @@ public class TestActiviry extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Bungee.slideDown(TestActiviry.this);
+    }
 }
