@@ -37,6 +37,39 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp"/>
 
+    <LinearLayout
+        android:id="@+id/set_private_linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginBottom="55dp"
+        android:layout_marginStart="20dp">
+
+        <com.suke.widget.SwitchButton
+            android:id="@+id/set_private_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"/>
+
+<!--        <TextView-->
+<!--            android:id="@+id/set_private_textView"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Public"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:layout_gravity="center_vertical"-->
+<!--            android:background="#DF292929"/>-->
+        
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/set_private_lottieView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:lottie_rawRes="@raw/lock"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"/>
+
+    </LinearLayout>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/post_meme_fab"
         android:layout_width="wrap_content"

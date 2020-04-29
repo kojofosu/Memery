@@ -17,11 +17,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
+
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mcdev.memery.General.GetIntents;
 import com.mcdev.memery.General.StringConstants;
 import com.squareup.picasso.Picasso;
+import com.suke.widget.SwitchButton;
 
 public class AddMemeFromDeviceActivity extends AppCompatActivity {
 
@@ -32,6 +38,10 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
     VideoView videoView;
     private FloatingActionButton fab;
     private EditText memeCaptionET;
+    private LottieAnimationView lottieAnimationView;
+    private TextView privateTextView;
+    private LinearLayout privateLinearLayout;
+    private SwitchButton privateSwitch;
 
 //    private LottieDialogFragment lottieDialogFragment;
 
@@ -62,6 +72,25 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
 
         String selectedType = null;        //to get the type of content that was selected either an image or video file
 
+//        lottieAnimationView.setFrame(45);
+        privateSwitch.setOnCheckedChangeListener((view, isChecked) -> {
+            if (isChecked){
+                lottieAnimationView.setSpeed(1);
+                lottieAnimationView.setFrame(45);
+                lottieAnimationView.setMaxFrame(60);
+                lottieAnimationView.resumeAnimation();
+                Toast.makeText(this, "private", Toast.LENGTH_SHORT).show();
+            }else {
+//                lottieAnimationView.setFrame(106);
+//                lottieAnimationView.setMaxFrame(117);
+                lottieAnimationView.setSpeed(-1);
+                lottieAnimationView.setMinFrame(45);
+                lottieAnimationView.resumeAnimation();
+//                lottieAnimationView.resumeAnimation();
+//                lottieAnimationView.setMaxFrame(60);
+                Toast.makeText(this, "public", Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
         /*separated the URIs because getting the uri from shared in tent and getting uri from in app take different paths*/
@@ -179,6 +208,10 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         videoView = findViewById(R.id.videoViewwww);
         fab = findViewById(R.id.post_meme_fab);
         memeCaptionET = findViewById(R.id.meme_caption);
+        privateLinearLayout = findViewById(R.id.set_private_linearLayout);
+//        privateTextView = findViewById(R.id.set_private_textView);
+        lottieAnimationView = findViewById(R.id.set_private_lottieView);
+        privateSwitch = findViewById(R.id.set_private_switch);
     }
 
 

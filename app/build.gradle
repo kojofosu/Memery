@@ -104,5 +104,7 @@ dependencies {
     implementation 'com.github.Binary-Finery:Bungee:2.0'
     //item animations
     implementation 'com.github.gayanvoice:android-animations:1.0.2'
+    //switch lib
+    implementation 'com.github.zcweng:switch-button:0.0.3@aar'
 
 }
