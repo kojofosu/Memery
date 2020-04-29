@@ -160,33 +160,16 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onLongClick(View view) {
                 String documentPath = model.getMemeId();        //getting the meme id which is same as the media name in storage
-                holder.lottieAnimationView.setVisibility(View.VISIBLE);
-                holder.lottieAnimationView.playAnimation();
-                holder.lottieAnimationView.setOnClickListener(view1 -> {
-                    FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();      //init firebase firestore
-                    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();        //init firebase storage
-                    StorageReference storageReference = firebaseStorage.getReference();      //init base storage reference
-                    assert currentUserId != null;
-                    /*storage ref to be deleted*/
-                    StorageReference refToDeleteStorage = storageReference
-                            .child(StringConstants.STORAGE_MEME_UPLOADS)
-                            .child(currentUserId)
-                            .child(documentPath);
-
-                    firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION).document(documentPath).delete()
-                            .addOnSuccessListener(aVoid -> {
-                                /*delete media from firebase storage as well*/
-                                refToDeleteStorage.delete().addOnSuccessListener(aVoid1 -> {
-                                    Log.d(TAG, "Deleted Successfully");
-                                    Toast.makeText(getApplicationContext(), "Deleted", Toast.LENGTH_SHORT).show();
-                                });
-
-                            })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Deleting failed : " + e.getLocalizedMessage());
-                        Toast.makeText(getContext(), "Failed to Delete", Toast.LENGTH_SHORT).show();
-                    });
-                });
+                //inflating bottom sheet delete confirmation
+                ConfirmationBottomSheetFragment confirmationBottomSheetFragment = new ConfirmationBottomSheetFragment();
+                Bundle bundle = new Bundle();       // init bundle to pass data
+                bundle.putString("confirmationDialogType", String.valueOf(StringConstants.ConfirmationDialog.CONFIRM_DELETE));
+                bundle.putString("currentUserId", currentUserId);
+                bundle.putString("documentPath", documentPath);
+                confirmationBottomSheetFragment.setArguments(bundle);
+                if (getFragmentManager() != null) {
+                    confirmationBottomSheetFragment.show(getFragmentManager(), confirmationBottomSheetFragment.getTag());
+                }
                 return true;
             }
         });
@@ -244,7 +227,6 @@ public class HomeFragment extends Fragment {
         ImageView imageView;
         VideoView videoView;
         TextView typeTextView, titleTextView;
-        LottieAnimationView lottieAnimationView;
 
         public MemeHolder(@NonNull View itemView) {
             super(itemView);
@@ -253,7 +235,6 @@ public class HomeFragment extends Fragment {
             videoView = itemView.findViewById(R.id.home_item_video_view);
             typeTextView = itemView.findViewById(R.id.home_item_type_text_view);
             titleTextView = itemView.findViewById(R.id.home_item_title_text_view);
-            lottieAnimationView = itemView.findViewById(R.id.home_item_delete_lottie);
         }
     }
 

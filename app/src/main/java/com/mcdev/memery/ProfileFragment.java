@@ -18,6 +18,7 @@ import com.facebook.AccessToken;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.jgabrielfreitas.core.BlurImageView;
+import com.mcdev.memery.General.StringConstants;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -80,9 +81,12 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(final View view) {
                 //inflating bottom sheet logout confirmation
-                LogoutBottomSheetFragment logoutBottomSheetFragment = new LogoutBottomSheetFragment();
+                ConfirmationBottomSheetFragment confirmationBottomSheetFragment = new ConfirmationBottomSheetFragment();
+                Bundle bundle = new Bundle();       // init bundle to pass data
+                bundle.putString("confirmationDialogType", String.valueOf(StringConstants.ConfirmationDialog.CONFIRM_LOGOUT));
+                confirmationBottomSheetFragment.setArguments(bundle);
                 if (getFragmentManager() != null) {
-                    logoutBottomSheetFragment.show(getFragmentManager(), logoutBottomSheetFragment.getTag());
+                    confirmationBottomSheetFragment.show(getFragmentManager(), confirmationBottomSheetFragment.getTag());
                 }
             }
         });

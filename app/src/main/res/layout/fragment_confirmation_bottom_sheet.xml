@@ -8,13 +8,12 @@
     android:paddingTop="@dimen/list_item_spacing_half"
     android:paddingBottom="@dimen/list_item_spacing_half"
     android:orientation="vertical"
-    tools:context=".LogoutBottomSheetFragment">
+    tools:context=".ConfirmationBottomSheetFragment">
 
     <Button
         android:id="@+id/confirm_logout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/log_out"
         android:textAllCaps="false"
         android:textSize="20sp"
         android:textColor="@android:color/holo_red_dark"

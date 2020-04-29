@@ -56,13 +56,4 @@
         android:singleLine="true"
         android:ellipsize="end"/>
 
-    <!--onLongClick items-->
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/home_item_delete_lottie"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        app:lottie_rawRes="@raw/delete_red"
-        android:background="@color/white"
-        android:visibility="gone"/>
 </androidx.cardview.widget.CardView>

@@ -15,4 +15,11 @@ public class StringConstants {
         SIGN_OUT,
         UPLOAD_FILES;
     }
+
+    /*BOTTOM SHEET CONFIRMATION DIALOG*/
+    public enum ConfirmationDialog {
+        CONFIRM_DELETE,
+        CONFIRM_LOGOUT;
+    }
+
 }
