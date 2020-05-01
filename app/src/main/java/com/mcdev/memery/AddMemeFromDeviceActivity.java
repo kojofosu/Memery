@@ -4,12 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.media.MediaPlayer;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +16,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.mcdev.memery.General.GetIntents;
 import com.mcdev.memery.General.StringConstants;
 import com.squareup.picasso.Picasso;
 import com.suke.widget.SwitchButton;
+
+import render.animations.Attention;
+import render.animations.Render;
 
 public class AddMemeFromDeviceActivity extends AppCompatActivity {
 
@@ -41,9 +39,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
     private LottieAnimationView lottieAnimationView;
     private TextView privateTextView;
     private LinearLayout privateLinearLayout;
-    private SwitchButton privateSwitch;
 
-//    private LottieDialogFragment lottieDialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +52,6 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         //set fullscreen
         setWindowFullScreen();
 
-//        /*Getting string extras*/
-//        URI = (Uri) getIntent().getExtras().get("URI");
-//        Log.d(TAG, "URI : " + URI);
-//        MIME_TYPE = (String) getIntent().getExtras().get("MIME_TYPE");
-//        Log.d(TAG, "MIME_TYPE : " + MIME_TYPE);
-//        PATH = (String) getIntent().getExtras().get("PATH");
-//        Log.d(TAG, "PATH : " + PATH);
-
-
         //getting data from share
         Intent shareIntent = getIntent();
         String action = shareIntent.getAction();
@@ -72,26 +59,42 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
 
         String selectedType = null;        //to get the type of content that was selected either an image or video file
 
-//        lottieAnimationView.setFrame(45);
-        privateSwitch.setOnCheckedChangeListener((view, isChecked) -> {
-            if (isChecked){
-                lottieAnimationView.setSpeed(1);
-                lottieAnimationView.setFrame(45);
-                lottieAnimationView.setMaxFrame(60);
-                lottieAnimationView.resumeAnimation();
-                Toast.makeText(this, "private", Toast.LENGTH_SHORT).show();
-            }else {
-//                lottieAnimationView.setFrame(106);
-//                lottieAnimationView.setMaxFrame(117);
-                lottieAnimationView.setSpeed(-1);
-                lottieAnimationView.setMinFrame(45);
-                lottieAnimationView.resumeAnimation();
+
+        privateLinearLayout.setSelected(true);      //setting this to true to make below code work properly
+        privateLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //set animation
+                customAnimateView(AddMemeFromDeviceActivity.this, privateTextView);
+
+                if (privateLinearLayout.isSelected()){
+                    lottieAnimationView.setSpeed(1);
+                    lottieAnimationView.setFrame(45);
+                    lottieAnimationView.setMaxFrame(60);
+                    lottieAnimationView.resumeAnimation();
+
+                    privateTextView.setText(R.string.private_post);
+
+                    privateLinearLayout.setSelected(false);         //needed
+                }else{
+                    lottieAnimationView.setSpeed(-1);
+                    lottieAnimationView.setMinFrame(45);
+                    lottieAnimationView.resumeAnimation();
 //                lottieAnimationView.resumeAnimation();
 //                lottieAnimationView.setMaxFrame(60);
-                Toast.makeText(this, "public", Toast.LENGTH_SHORT).show();
+
+                    privateTextView.setText(R.string.public_post);
+                    privateLinearLayout.setSelected(true);      //needed
+                }
+            }
+
+            private void customAnimateView(AddMemeFromDeviceActivity addMemeFromDeviceActivity, TextView privateTextView) {
+                // Create Render Class
+                Render render = new Render(addMemeFromDeviceActivity);
+                render.setAnimation(Attention.Shake(privateTextView));
+                render.start();
             }
         });
-
 
         /*separated the URIs because getting the uri from shared in tent and getting uri from in app take different paths*/
         if ("android.intent.action.SEND".equals(action)) {
@@ -197,6 +200,14 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         bundle.putString("currentUserId", currentUserId);
         bundle.putString("caption", caption);
         bundle.putString("selectedType",selectedType);
+        /*checking to see if the current post is supposed to be private or public*/
+        if (privateTextView.getText().equals(StringConstants.PRIVATE_POST)){
+            //make post private
+            bundle.putBoolean("isPrivate", true);
+        } else if (privateTextView.getText().equals(StringConstants.PUBLIC_POST)) {
+            //make post public
+            bundle.putBoolean("isPrivate", false);
+        }
         lottieDialogFragment.setArguments(bundle);
         lottieDialogFragment.show(getSupportFragmentManager(),"");
 
@@ -209,9 +220,8 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
         fab = findViewById(R.id.post_meme_fab);
         memeCaptionET = findViewById(R.id.meme_caption);
         privateLinearLayout = findViewById(R.id.set_private_linearLayout);
-//        privateTextView = findViewById(R.id.set_private_textView);
+        privateTextView = findViewById(R.id.set_private_textView);
         lottieAnimationView = findViewById(R.id.set_private_lottieView);
-        privateSwitch = findViewById(R.id.set_private_switch);
     }
 
 

@@ -9,6 +9,10 @@ public class StringConstants {
     /*FIREBASE STORAGE*/
     public final static String STORAGE_MEME_UPLOADS = "Memeries";
 
+    /*PRIVATE OR PUBLIC POSTS*/
+    public final static String PUBLIC_POST= "Public";
+    public final static String PRIVATE_POST= "Private";
+
     /*LOTTIE DIALOG FRAGMENT*/
     public enum DialogType{
         SIGN_IN,
