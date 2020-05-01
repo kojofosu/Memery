@@ -178,7 +178,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //first posting the meme to firebase storage to get the download url
-                String caption = memeCaptionET.getText().toString();
+                String caption = memeCaptionET.getText().toString().trim();
                 SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserDetails", MODE_PRIVATE);
                 String eyeDee = sharedPreferences.getString("userID", null);
                 Log.d(TAG, "userID " + eyeDee);
