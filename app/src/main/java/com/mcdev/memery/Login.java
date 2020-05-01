@@ -16,8 +16,11 @@ import android.widget.VideoView;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookRequestError;
+import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -36,6 +39,7 @@ import com.mcdev.memery.General.StringConstants;
 import com.mcdev.memery.POJOS.Users;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
@@ -243,6 +247,8 @@ public class Login extends AppCompatActivity {
                 TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
                 String token = result.data.getAuthToken().token;
                 String secret = result.data.getAuthToken().secret;
+                Log.d(TAG, "Twitter token : " + token);
+                Log.d(TAG, "Twitter secret : " + secret);
                 AuthCredential authCredential = TwitterAuthProvider.getCredential(token, secret);
                 firebaseAuth.signInWithCredential(authCredential)
                         .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
@@ -307,7 +313,7 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void failure(TwitterException exception) {
-                lottieDialogFragment.dismiss();         //dismiss custom dialog
+                //lottieDialogFragment.dismiss();         //dismiss custom dialog {commented this because the dialog fragment starts showing only when the twitter callback is successful hence this will cause app to crash if uncommented}
                 Toast.makeText(Login.this, "Error Occurred", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onErrorTwitterLogin: " + exception.getMessage() + "\n caused by :" + exception.getCause());
             }
@@ -463,9 +469,29 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //facebook onActivityResult
-        facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
-        //twitter onActivityResult
-        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
+        /*separating twitter and facebook's request and result codes*/
+        if (requestCode == TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE) {
+            // Twitter request code
+            try {
+                //twitter onActivityResult
+                twitterLoginButton.onActivityResult(requestCode, resultCode, data);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "error " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+        } else {
+            // Use Facebook callback manager here
+            try {
+                //facebook onActivityResult
+                facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "error " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+
     }
 }
