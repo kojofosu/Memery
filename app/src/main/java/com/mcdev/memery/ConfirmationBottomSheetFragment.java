@@ -64,7 +64,7 @@ public class ConfirmationBottomSheetFragment extends BottomSheetDialogFragment {
         //init custom dialog
         lottieDialogFragment = new LottieDialogFragment();
         //sharedPrefs
-        sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
+        sharedPreferences = requireContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
 
         //init Firebase stuff
         initFirebaseStuff();
@@ -182,7 +182,7 @@ public class ConfirmationBottomSheetFragment extends BottomSheetDialogFragment {
         GetIntents getIntents = new GetIntents();       //init  getIntents
         lottieDialogFragment.dismiss();     //dismiss dialog
         getIntents.goToLogin(getActivity());        //start intent
-        Objects.requireNonNull(getActivity()).finish();         //finish
+        requireActivity().finish();         //finish
     }
 
     private boolean isUserLoggedInWithFacebook(){

@@ -119,11 +119,11 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, "memeId from db : " + memeID);
                 String title = model.getMemeTitle();
                 Log.d(TAG, "title from db : " + title);
-                Long postedAt = model.getPostedAt();
+                long postedAt = model.getPostedAt();
                 Log.d(TAG, "postedAt from db : " + postedAt);
-                Long updatedAt = model.getUpdatedAt();
+                long updatedAt = model.getUpdatedAt();
                 Log.d(TAG, "updatedAt from db : " + updatedAt);
-                Boolean isPrivate = model.isPrivate();
+                boolean isPrivate = model.isPrivate();
                 Log.d(TAG, "isPrivate from db : " + isPrivate);
 
                 if (type.equals("video")){
@@ -131,7 +131,7 @@ public class HomeFragment extends Fragment {
                     holder.typeTextView.setText(".MP4");
                     long interval = 5000 * 1000;
                     RequestOptions options = new RequestOptions().frame(interval);
-                    Glide.with(getContext()).asBitmap()
+                    Glide.with(requireContext()).asBitmap()
                             .load(downloadUrl)
                             .apply(options)
                             .into(holder.imageView);
@@ -166,38 +166,46 @@ public class HomeFragment extends Fragment {
             public boolean onLongClick(View view) {
                 String documentPath = model.getMemeId();        //getting the meme id which is same as the media name in storage
                 String uploadedBy = model.getUploadedBy();          //getting the id of user who posted the meme to avoid unauthorized users from being able to delete it
-                /*checking to see if current user is the one who posted the meme*/
-                assert currentUserId != null;
-                if (!currentUserId.equals(uploadedBy)){
-                    Flashbar progressFlashBar = new Flashbar.Builder(Objects.requireNonNull(getActivity()))
-                            .gravity(Flashbar.Gravity.TOP)
-                            .title("Cannot delete.")
-                            .message("Post belongs to someone else")
-                            .duration(2000L)
-                            .showIcon()
-                            .icon(R.drawable.ic_warning_24dp)
-                            .iconColorFilterRes(R.color.yellow)
-                            .iconAnimation(FlashAnim.with(getActivity()).animateIcon()
-                            .pulse()
-                            .alpha()
-                            .duration(750)
-                            .accelerate())
-                            .enableSwipeToDismiss()
-                            .backgroundDrawable(R.drawable.deleted_bg)
-                            .build();
-                    progressFlashBar.show();
-                }else {
-                    //inflating bottom sheet delete confirmation
-                    ConfirmationBottomSheetFragment confirmationBottomSheetFragment = new ConfirmationBottomSheetFragment();
-                    Bundle bundle = new Bundle();       // init bundle to pass data
-                    bundle.putString("confirmationDialogType", String.valueOf(StringConstants.ConfirmationDialog.CONFIRM_DELETE));
-                    bundle.putString("currentUserId", currentUserId);
-                    bundle.putString("documentPath", documentPath);
-                    confirmationBottomSheetFragment.setArguments(bundle);
-                    if (getFragmentManager() != null) {
-                        confirmationBottomSheetFragment.show(getFragmentManager(), confirmationBottomSheetFragment.getTag());
-                    }
-                }
+
+                MemeDetailsFragment memeDetailsFragment = new MemeDetailsFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("memeId", documentPath);
+                bundle.putString("userId", uploadedBy);
+                memeDetailsFragment.setArguments(bundle);
+                memeDetailsFragment.show(getParentFragmentManager(), "");
+
+//                /*checking to see if current user is the one who posted the meme*/
+//                assert currentUserId != null;
+//                if (!currentUserId.equals(uploadedBy)){
+//                    Flashbar progressFlashBar = new Flashbar.Builder(requireActivity())
+//                            .gravity(Flashbar.Gravity.TOP)
+//                            .title("Cannot delete.")
+//                            .message("Post belongs to someone else")
+//                            .duration(2000L)
+//                            .showIcon()
+//                            .icon(R.drawable.ic_warning_24dp)
+//                            .iconColorFilterRes(R.color.yellow)
+//                            .iconAnimation(FlashAnim.with(requireActivity()).animateIcon()
+//                            .pulse()
+//                            .alpha()
+//                            .duration(750)
+//                            .accelerate())
+//                            .enableSwipeToDismiss()
+//                            .backgroundDrawable(R.drawable.deleted_bg)
+//                            .build();
+//                    progressFlashBar.show();
+//                }else {
+//                    //inflating bottom sheet delete confirmation
+//                    ConfirmationBottomSheetFragment confirmationBottomSheetFragment = new ConfirmationBottomSheetFragment();
+//                    Bundle bundle = new Bundle();       // init bundle to pass data
+//                    bundle.putString("confirmationDialogType", String.valueOf(StringConstants.ConfirmationDialog.CONFIRM_DELETE));
+//                    bundle.putString("currentUserId", currentUserId);
+//                    bundle.putString("documentPath", documentPath);
+//                    confirmationBottomSheetFragment.setArguments(bundle);
+//                    if (getFragmentManager() != null) {
+//                        confirmationBottomSheetFragment.show(getFragmentManager(), confirmationBottomSheetFragment.getTag());
+//                    }
+//                }
 
                 return true;
             }
@@ -209,7 +217,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), TestActiviry.class));
-                Bungee.slideUp(Objects.requireNonNull(getActivity()));
+                Bungee.slideUp(requireActivity());
             }
         });
     }

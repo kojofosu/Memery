@@ -262,14 +262,14 @@ public class Login extends AppCompatActivity {
                                     if (authResult.getUser() != null){
                                         //creating the document to get the ID and add it as a field in the users collection
                                         DocumentReference documentReference = firestoreReference.collection(StringConstants.USERS_COLLECTION).document();
-                                        String documentID = documentReference.getId();
-
+                                        //String documentID = documentReference.getId();
+                                        String documentID = authResult.getUser().getUid();
                                         //populating user field
                                         users.setUserName(authResult.getUser().getDisplayName());
                                         users.setUserEmail(authResult.getUser().getEmail());
                                         users.setUserId(authResult.getUser().getUid());
                                         users.setUserPhoneNumber(authResult.getUser().getPhoneNumber());
-                                        users.setUserPhotoUrl(authResult.getUser().getPhotoUrl().toString());
+                                        users.setUserPhotoUrl(authResult.getUser().getPhotoUrl().toString().replace("_normal", ""));        //getting the HD version of user twitter profile image
                                         users.setAccountCreation(authResult.getUser().getMetadata().getCreationTimestamp());
                                         users.setLastLogIn(authResult.getUser().getMetadata().getLastSignInTimestamp());
                                         users.setUserDocID(documentID);
@@ -288,7 +288,15 @@ public class Login extends AppCompatActivity {
                                                         Login.this.finish();
                                                         Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
                                                     }
-                                                });
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                lottieDialogFragment.dismiss();
+                                                e.printStackTrace();
+                                                Log.d(TAG, "onFailureFirebaseLogin: " + e.getLocalizedMessage());
+                                                Toast.makeText(Login.this, "Try again", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     }
 
                                 }else {
@@ -305,7 +313,7 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         lottieDialogFragment.dismiss();         //dismiss custom dialog
-                        Toast.makeText(Login.this, "Error Occurred", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Login.this, "Try again", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "onFailureFirebaseLogin: " + e.getMessage() + "\n caused by : " + e.getCause());
                     }
                 });
@@ -315,7 +323,7 @@ public class Login extends AppCompatActivity {
             @Override
             public void failure(TwitterException exception) {
                 //lottieDialogFragment.dismiss();         //dismiss custom dialog {commented this because the dialog fragment starts showing only when the twitter callback is successful hence this will cause app to crash if uncommented}
-                Toast.makeText(Login.this, "Error Occurred", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Login.this, "Try again", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onErrorTwitterLogin: " + exception.getMessage() + "\n caused by :" + exception.getCause());
             }
         });
@@ -360,7 +368,7 @@ public class Login extends AppCompatActivity {
                                         users.setUserEmail(authResult.getUser().getEmail());
                                         users.setUserId(documentID);
                                         users.setUserPhoneNumber(authResult.getUser().getPhoneNumber());
-                                        users.setUserPhotoUrl(authResult.getUser().getPhotoUrl().toString());
+                                        users.setUserPhotoUrl(authResult.getUser().getPhotoUrl().toString() + "?height=500");        //getting the HD version of user facebook profile image
                                         users.setAccountCreation(authResult.getUser().getMetadata().getCreationTimestamp());
                                         users.setLastLogIn(authResult.getUser().getMetadata().getLastSignInTimestamp());
                                         users.setUserDocID(documentID);
@@ -378,10 +386,19 @@ public class Login extends AppCompatActivity {
                                                         Login.this.finish();
                                                         Toast.makeText(getApplicationContext(), "Logged in successfully!", Toast.LENGTH_SHORT).show();
                                                     }
-                                                });
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                lottieDialogFragment.dismiss();
+                                                e.printStackTrace();
+                                                Log.d(TAG, "onFailureFirebaseLogin: " + e.getLocalizedMessage());
+                                                Toast.makeText(Login.this, "Try again", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     }
 
                                 }else {
+                                    lottieDialogFragment.dismiss();
                                     Log.d(TAG, "old user logged in");
                                     //go to home page
                                     getIntents.goToHome(Login.this);
@@ -391,11 +408,12 @@ public class Login extends AppCompatActivity {
 
                             }
                         }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "onFailureFirebaseLogin: " + e.getMessage() + "\n caused by : " + e.getCause());
-                    }
-                });
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                lottieDialogFragment.dismiss();
+                                Log.d(TAG, "onFailureFirebaseLogin: " + e.getMessage() + "\n caused by : " + e.getCause());
+                            }
+                       });
 
             }
 
@@ -408,7 +426,7 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
-                lottieDialogFragment.dismiss();         //dismiss custom dialog
+                //lottieDialogFragment.dismiss();         //dismiss custom dialog
                 Toast.makeText(Login.this, "Error Occurred", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onErrorFacebookLogin: " + error.getMessage() + "\n caused by :" + error.getCause());
             }
