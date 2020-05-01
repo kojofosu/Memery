@@ -114,6 +114,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
                     Log.d(TAG, "uri : " + URI);
                 } else if (type.startsWith("video/")) {
                     if (URI != null) {
+                        Log.println(Log.ASSERT, "shareableUriExtra", String.valueOf(URI));
                         Log.d(this.getClass().getName(), "Video");
                         imageView.setVisibility(View.GONE);             //setting image view invisible
                         videoView.setVisibility(View.VISIBLE);      //setting video view visible
@@ -144,6 +145,7 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
                     Log.d(TAG, "uri : " + URI);
                 } else if (type.startsWith("video/")) {
                     if (URI != null) {
+                        Log.println(Log.ASSERT, "shareableUriExtra", String.valueOf(URI));
                         Log.d(this.getClass().getName(), "Video");
                         imageView.setVisibility(View.GONE);             //setting image view invisible
                         videoView.setVisibility(View.VISIBLE);      //setting video view visible
