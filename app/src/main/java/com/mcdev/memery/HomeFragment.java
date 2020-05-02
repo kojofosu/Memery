@@ -166,11 +166,19 @@ public class HomeFragment extends Fragment {
             public boolean onLongClick(View view) {
                 String documentPath = model.getMemeId();        //getting the meme id which is same as the media name in storage
                 String uploadedBy = model.getUploadedBy();          //getting the id of user who posted the meme to avoid unauthorized users from being able to delete it
+                String memeTitle = model.getMemeTitle();            //getting the title fo the meme
+                long memeDate = model.getPostedAt();            //getting the date the meme was posted
+                String memeUrl = model.getDownloadUrl();            //getting the meme's download url
+                String memeType = model.getMemeType();          //getting the type of the meme. Either a video, gif or an image
 
                 MemeDetailsFragment memeDetailsFragment = new MemeDetailsFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString("memeId", documentPath);
                 bundle.putString("userId", uploadedBy);
+                bundle.putString("memeId", documentPath);
+                bundle.putString("memeTitle", memeTitle);
+                bundle.putLong("memeDate", memeDate);
+                bundle.putString("memeUrl", memeUrl);
+                bundle.putString("memeType", memeType);
                 memeDetailsFragment.setArguments(bundle);
                 memeDetailsFragment.show(getParentFragmentManager(), "");
 

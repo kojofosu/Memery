@@ -1,8 +1,10 @@
 package com.mcdev.memery;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -58,16 +60,29 @@ public class MemeDetailsFragment extends BottomSheetDialogFragment {
         //getting extras
         Bundle args = getArguments();
         if (args != null) {
-            String memeId = args.getString("memeId");
             String userId = args.getString("userId");
+            String memeId = args.getString("memeId");
+            String memeTitle = args.getString("memeTitle");
+            String memeDate = String.valueOf(args.getLong("memeDate"));
+            String memeUrl = args.getString("memeUrl");
+            String memeType = args.getString("memeType");
 
+            /*setting meme details to fields and views*/
+            setMemeInfo(memeId, memeTitle, memeDate, memeUrl, memeType);
             //fetch user details
             getUserInfo(userId);
             //fetch meme details
-            getMemeInfo(memeId);
+            //getMemeInfo(memeId);
         }
 
         return view;
+    }
+
+    private void setMemeInfo(String memeId, String memeTitle, String memeDate, String memeUrl, String memeType) {
+        //setting variables to text views
+        memeTitleTV.setText(memeTitle);
+        memeDateTV.setText(memeDate);
+        memeTypeTV.setText(memeType);
     }
 
     private void getMemeInfo(String memeId) {
