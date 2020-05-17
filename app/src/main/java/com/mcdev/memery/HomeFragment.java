@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -49,6 +50,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+import render.animations.Attention;
+import render.animations.Render;
 import spencerstudios.com.bungeelib.Bungee;
 
 import static android.app.Activity.RESULT_OK;
@@ -61,6 +64,11 @@ public class HomeFragment extends Fragment {
     private static final int PickMeme = 212;
     private static final String TAG = HomeFragment.class.getSimpleName();
     private RecyclerView recyclerView;
+    private LinearLayout togglePrivateLayout;
+    private TextView togglePrivateTV;
+    private FirebaseFirestore firebaseFirestore;
+    private SharedPreferences sharedPreferences;
+    private String currentUserId;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -76,23 +84,83 @@ public class HomeFragment extends Fragment {
         //init
         init(view);
 
+
+        //shared prefs
+        sharedPreferences = requireContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
+        currentUserId = sharedPreferences.getString("userID", "");
+
+
         //listeners
         fabListener();
 
+
         //firebase stuff
+        firebaseFirestore = FirebaseFirestore.getInstance();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        firebaseFirestoreUI();
 
 
+        //toggle private listener
+        togglePrivateListener();
+
+
+        //filter memes by type at launch
+        filterMemes();
 
         return view;
     }
 
-    private void firebaseFirestoreUI() {
-        Query query = FirebaseFirestore.getInstance()
-                .collection(StringConstants.MEMERIES_COLLECTION)
-                .orderBy("postedAt", Query.Direction.DESCENDING);
+    private void togglePrivateListener() {
+        togglePrivateLayout.setSelected(true);      //setting this to true to make below code work properly
+        togglePrivateLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //set animation
+                customAnimateView(getApplicationContext(), togglePrivateTV);
+
+
+                if (togglePrivateLayout.isSelected()){
+                    togglePrivateTV.setText(R.string.private_post);
+                    filterMemes();          //filter meme results
+                    togglePrivateLayout.setSelected(false);         //needed
+                }else{
+                    togglePrivateTV.setText(R.string.public_post);
+                    filterMemes();          //filter meme results
+                    togglePrivateLayout.setSelected(true);      //needed
+                }
+
+            }
+            private void customAnimateView(Context context, TextView privateTextView) {
+                // Create Render Class
+                Render render = new Render(context);
+                render.setAnimation(Attention.Shake(privateTextView));
+                render.start();
+            }
+        });
+    }
+
+    private void filterMemes() {
+        if (togglePrivateTV.getText().equals(StringConstants.PRIVATE_POST)){
+            /*filter memes to display private memes only by the current user*/
+            Query query = firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION)
+                    .whereEqualTo("private", true)          //display only private posts
+                    .whereEqualTo("uploadedBy", currentUserId)      //display only posts by current user
+                    .orderBy("postedAt", Query.Direction.DESCENDING);       //sort recent post on top
+            /*pass quety to firebase UI*/
+            firebaseFirestoreUI(query);
+        } else if (togglePrivateTV.getText().equals(StringConstants.PUBLIC_POST)) {
+            //filter post public
+            Query query = firebaseFirestore
+                    .collection(StringConstants.MEMERIES_COLLECTION)
+                    .whereEqualTo("private", false)         //display only public posts
+                    .orderBy("postedAt", Query.Direction.DESCENDING);       //sort recent posts on top
+            /*pass query to firebase UI*/
+            firebaseFirestoreUI(query);
+        }
+    }
+
+    private void firebaseFirestoreUI(Query query) {
+
 
         FirestoreRecyclerOptions<MemeUploads> options = new FirestoreRecyclerOptions.Builder<MemeUploads>()
                 .setQuery(query, MemeUploads.class)
@@ -246,6 +314,8 @@ public class HomeFragment extends Fragment {
     private void init(@NotNull View view ) {
         homeFAB = view.findViewById(R.id.home_fab);
         recyclerView = view.findViewById(R.id.home_recyclerview);
+        togglePrivateLayout = view.findViewById(R.id.home_set_private_linearLayout);
+        togglePrivateTV = view.findViewById(R.id.home_set_private_textView);
     }
 
     @Override

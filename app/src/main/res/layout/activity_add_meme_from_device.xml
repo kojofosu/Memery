@@ -59,14 +59,14 @@
 
         <TextView
             android:id="@+id/set_private_textView"
-            android:layout_width="70dp"
+            android:layout_width="69dp"
             android:layout_height="wrap_content"
-            android:text="Public"
-            android:textColor="@color/white"
             android:layout_gravity="center"
-            android:gravity="center"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/bg_private"
-            android:layout_marginEnd="20dp"/>
+            android:gravity="center"
+            android:text="Public"
+            android:textColor="@color/white" />
         
 
 
