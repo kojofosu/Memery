@@ -63,7 +63,7 @@ public class MemeDetailsFragment extends BottomSheetDialogFragment {
             String userId = args.getString("userId");
             String memeId = args.getString("memeId");
             String memeTitle = args.getString("memeTitle");
-            String memeDate = String.valueOf(args.getLong("memeDate"));
+            String memeDate = String.valueOf(args.getString("memeDate"));
             String memeUrl = args.getString("memeUrl");
             String memeType = args.getString("memeType");
 

@@ -48,7 +48,13 @@ import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import render.animations.Attention;
 import render.animations.Render;
@@ -161,7 +167,6 @@ public class HomeFragment extends Fragment {
 
     private void firebaseFirestoreUI(Query query) {
 
-
         FirestoreRecyclerOptions<MemeUploads> options = new FirestoreRecyclerOptions.Builder<MemeUploads>()
                 .setQuery(query, MemeUploads.class)
                 .setLifecycleOwner(getActivity())
@@ -235,16 +240,18 @@ public class HomeFragment extends Fragment {
                 String documentPath = model.getMemeId();        //getting the meme id which is same as the media name in storage
                 String uploadedBy = model.getUploadedBy();          //getting the id of user who posted the meme to avoid unauthorized users from being able to delete it
                 String memeTitle = model.getMemeTitle();            //getting the title fo the meme
+
                 long memeDate = model.getPostedAt();            //getting the date the meme was posted
                 String memeUrl = model.getDownloadUrl();            //getting the meme's download url
                 String memeType = model.getMemeType();          //getting the type of the meme. Either a video, gif or an image
+                String getDateInString = getDate(memeDate);
 
                 MemeDetailsFragment memeDetailsFragment = new MemeDetailsFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("userId", uploadedBy);
                 bundle.putString("memeId", documentPath);
                 bundle.putString("memeTitle", memeTitle);
-                bundle.putLong("memeDate", memeDate);
+                bundle.putString("memeDate", getDateInString);
                 bundle.putString("memeUrl", memeUrl);
                 bundle.putString("memeType", memeType);
                 memeDetailsFragment.setArguments(bundle);
@@ -286,6 +293,13 @@ public class HomeFragment extends Fragment {
                 return true;
             }
         });
+    }
+
+    private String getDate(long memeDate) {
+        Date date = new Date(TimeUnit.SECONDS.toMillis(memeDate));      //accepts the time as long in milliseconds, not seconds. You need to multiply it by 1000 or convert it and make sure that you supply it as long.
+        DateFormat simpleDateFormat = SimpleDateFormat.getDateInstance(DateFormat.LONG, Locale.ENGLISH);
+        DateFormat simpleTimeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT);
+        return simpleTimeFormat.format(date) + " · " + simpleDateFormat.format(date);
     }
 
     private void holderItemClick(MemeHolder holder, int position, MemeUploads model) {
