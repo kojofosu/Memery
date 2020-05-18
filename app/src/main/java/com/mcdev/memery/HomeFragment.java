@@ -1,11 +1,9 @@
 package com.mcdev.memery;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -24,24 +22,17 @@ import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.andrognito.flashbar.Flashbar;
 import com.andrognito.flashbar.anim.FlashAnim;
-import com.andrognito.flashbar.anim.FlashAnimIconBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.mcdev.memery.General.StringConstants;
 import com.mcdev.memery.POJOS.MemeUploads;
 import com.squareup.picasso.Picasso;
@@ -50,10 +41,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import render.animations.Attention;
@@ -100,18 +89,24 @@ public class HomeFragment extends Fragment {
         fabListener();
 
 
+
+
         //firebase stuff
         firebaseFirestore = FirebaseFirestore.getInstance();
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
+
+        //filter memes by type at launch
+        filterMemes();
 
 
         //toggle private listener
         togglePrivateListener();
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
 
-        //filter memes by type at launch
-        filterMemes();
+
+
+
 
         return view;
     }
@@ -246,49 +241,49 @@ public class HomeFragment extends Fragment {
                 String memeType = model.getMemeType();          //getting the type of the meme. Either a video, gif or an image
                 String getDateInString = getDate(memeDate);
 
-                MemeDetailsFragment memeDetailsFragment = new MemeDetailsFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("userId", uploadedBy);
-                bundle.putString("memeId", documentPath);
-                bundle.putString("memeTitle", memeTitle);
-                bundle.putString("memeDate", getDateInString);
-                bundle.putString("memeUrl", memeUrl);
-                bundle.putString("memeType", memeType);
-                memeDetailsFragment.setArguments(bundle);
-                memeDetailsFragment.show(getParentFragmentManager(), "");
+//                MemeDetailsFragment memeDetailsFragment = new MemeDetailsFragment();
+//                Bundle bundle = new Bundle();
+//                bundle.putString("userId", uploadedBy);
+//                bundle.putString("memeId", documentPath);
+//                bundle.putString("memeTitle", memeTitle);
+//                bundle.putString("memeDate", getDateInString);
+//                bundle.putString("memeUrl", memeUrl);
+//                bundle.putString("memeType", memeType);
+//                memeDetailsFragment.setArguments(bundle);
+//                memeDetailsFragment.show(getParentFragmentManager(), "");
 
-//                /*checking to see if current user is the one who posted the meme*/
-//                assert currentUserId != null;
-//                if (!currentUserId.equals(uploadedBy)){
-//                    Flashbar progressFlashBar = new Flashbar.Builder(requireActivity())
-//                            .gravity(Flashbar.Gravity.TOP)
-//                            .title("Cannot delete.")
-//                            .message("Post belongs to someone else")
-//                            .duration(2000L)
-//                            .showIcon()
-//                            .icon(R.drawable.ic_warning_24dp)
-//                            .iconColorFilterRes(R.color.yellow)
-//                            .iconAnimation(FlashAnim.with(requireActivity()).animateIcon()
-//                            .pulse()
-//                            .alpha()
-//                            .duration(750)
-//                            .accelerate())
-//                            .enableSwipeToDismiss()
-//                            .backgroundDrawable(R.drawable.deleted_bg)
-//                            .build();
-//                    progressFlashBar.show();
-//                }else {
-//                    //inflating bottom sheet delete confirmation
-//                    ConfirmationBottomSheetFragment confirmationBottomSheetFragment = new ConfirmationBottomSheetFragment();
-//                    Bundle bundle = new Bundle();       // init bundle to pass data
-//                    bundle.putString("confirmationDialogType", String.valueOf(StringConstants.ConfirmationDialog.CONFIRM_DELETE));
-//                    bundle.putString("currentUserId", currentUserId);
-//                    bundle.putString("documentPath", documentPath);
-//                    confirmationBottomSheetFragment.setArguments(bundle);
-//                    if (getFragmentManager() != null) {
-//                        confirmationBottomSheetFragment.show(getFragmentManager(), confirmationBottomSheetFragment.getTag());
-//                    }
-//                }
+                /*checking to see if current user is the one who posted the meme*/
+                assert currentUserId != null;
+                if (!currentUserId.equals(uploadedBy)){
+                    Flashbar progressFlashBar = new Flashbar.Builder(requireActivity())
+                            .gravity(Flashbar.Gravity.TOP)
+                            .title("Cannot delete.")
+                            .message("Post belongs to someone else")
+                            .duration(2000L)
+                            .showIcon()
+                            .icon(R.drawable.ic_warning_24dp)
+                            .iconColorFilterRes(R.color.yellow)
+                            .iconAnimation(FlashAnim.with(requireActivity()).animateIcon()
+                            .pulse()
+                            .alpha()
+                            .duration(750)
+                            .accelerate())
+                            .enableSwipeToDismiss()
+                            .backgroundDrawable(R.drawable.deleted_bg)
+                            .build();
+                    progressFlashBar.show();
+                }else {
+                    //inflating bottom sheet delete confirmation
+                    ConfirmationBottomSheetFragment confirmationBottomSheetFragment = new ConfirmationBottomSheetFragment();
+                    Bundle bundle = new Bundle();       // init bundle to pass data
+                    bundle.putString("confirmationDialogType", String.valueOf(StringConstants.ConfirmationDialog.CONFIRM_DELETE));
+                    bundle.putString("currentUserId", currentUserId);
+                    bundle.putString("documentPath", documentPath);
+                    confirmationBottomSheetFragment.setArguments(bundle);
+                    if (getFragmentManager() != null) {
+                        confirmationBottomSheetFragment.show(getFragmentManager(), confirmationBottomSheetFragment.getTag());
+                    }
+                }
 
                 return true;
             }
@@ -306,7 +301,23 @@ public class HomeFragment extends Fragment {
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), TestActiviry.class));
+                String documentPath = model.getMemeId();        //getting the meme id which is same as the media name in storage
+                String uploadedBy = model.getUploadedBy();          //getting the id of user who posted the meme to avoid unauthorized users from being able to delete it
+                String memeTitle = model.getMemeTitle();            //getting the title fo the meme
+
+                long memeDate = model.getPostedAt();            //getting the date the meme was posted
+                String memeUrl = model.getDownloadUrl();            //getting the meme's download url
+                String memeType = model.getMemeType();          //getting the type of the meme. Either a video, gif or an image
+                String getDateInString = getDate(memeDate);
+
+                Intent intent = new Intent(getActivity(), ViewMemeActivity.class);
+                intent.putExtra("userId", uploadedBy);
+                intent.putExtra("memeId", documentPath);
+                intent.putExtra("memeTitle", memeTitle);
+                intent.putExtra("memeDate", getDateInString);
+                intent.putExtra("memeUrl", memeUrl);
+                intent.putExtra("memeType", memeType);
+                startActivity(intent);
                 Bungee.slideUp(requireActivity());
             }
         });

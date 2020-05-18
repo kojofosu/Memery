@@ -14,7 +14,7 @@
     <string name="signing_in">Signing in...</string>
     <string name="signing_out">signing out...</string>
     <string name="dot_separator">·</string>
-    <string name="title_activity_test_activiry">TestActiviry</string>
+    <string name="title_activity_viewMeme">View Meme Activity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>

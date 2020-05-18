@@ -14,10 +14,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!--view meme activity-->
         <activity
-            android:name=".TestActiviry"
-            android:label="@string/title_activity_test_activiry"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:name=".ViewMemeActivity"
+            android:label="@string/title_activity_viewMeme"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <!-- add meme from device activity -->
         <activity android:name=".AddMemeFromDeviceActivity">
 

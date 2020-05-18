@@ -104,6 +104,10 @@ dependencies {
     //item animations
     implementation 'com.github.gayanvoice:android-animations:1.0.2'
     //switch lib
-    implementation 'com.github.zcweng:switch-button:0.0.3@aar'
+    implementation 'com.github.zcweng:switch-button:0.0.3@aar'          //unused
+    //exo player
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.10.5'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.10.5'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.10.5'
 
 }
