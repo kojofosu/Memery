@@ -1,12 +1,19 @@
 package com.mcdev.memery;
 
 import android.annotation.SuppressLint;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -29,8 +36,9 @@ public class ViewMemeActivity extends AppCompatActivity {
     private PlayerView playerView;
 
     SimpleExoPlayer player;
-    ImageView imageViewPreview;
+    ImageView imageView;
     Uri uri;
+    String memeType;
 
 
     @Override
@@ -43,9 +51,19 @@ public class ViewMemeActivity extends AppCompatActivity {
 
         //get intents
         uri = Uri.parse(Objects.requireNonNull(getIntent().getExtras()).getString("memeUrl"));
+        memeType = getIntent().getExtras().getString("memeType");
 
         //player view
 //        initializePlayer(uri);
+    }
+
+
+    private void initializeImageView(Uri uri) {
+
+        Glide
+                .with(this)
+                .load(uri)
+                .into(imageView);
     }
 
     private void initializePlayer(Uri uri) {
@@ -60,7 +78,7 @@ public class ViewMemeActivity extends AppCompatActivity {
 
     private void init() {
         playerView = findViewById(R.id.player_view);
-        imageViewPreview = findViewById(R.id.imageView);
+        imageView = findViewById(R.id.view_meme_image_view);
     }
 
     private MediaSource buildMediaSource(Uri uri) {
@@ -80,9 +98,17 @@ public class ViewMemeActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (Util.SDK_INT >= 24) {
-            initializePlayer(uri);
+            if (memeType.equals("video")) {
+                playerView.setVisibility(View.VISIBLE);
+                initializePlayer(uri);
+            } else {
+                imageView.setVisibility(View.VISIBLE);
+                initializeImageView(uri);
+            }
         }
     }
+
+
 
     @Override
     protected void onStop() {
@@ -97,9 +123,16 @@ public class ViewMemeActivity extends AppCompatActivity {
         super.onResume();
         hideSystemUi();
         if ((Util.SDK_INT < 24 || player == null)) {
-            initializePlayer(uri);
+            if (memeType.equals("video")) {
+                playerView.setVisibility(View.VISIBLE);
+                initializePlayer(uri);
+            } else {
+                imageView.setVisibility(View.VISIBLE);
+                initializeImageView(uri);
+            }
         }
     }
+
 
 
     /*hideSystemUi is a helper method called in onResume which allows us to have a full screen experience. */
