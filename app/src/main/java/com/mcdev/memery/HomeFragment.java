@@ -64,6 +64,7 @@ public class HomeFragment extends Fragment {
     private FirebaseFirestore firebaseFirestore;
     private SharedPreferences sharedPreferences;
     private String currentUserId;
+    FirestoreRecyclerAdapter adapter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -147,7 +148,7 @@ public class HomeFragment extends Fragment {
                     .whereEqualTo("private", true)          //display only private posts
                     .whereEqualTo("uploadedBy", currentUserId)      //display only posts by current user
                     .orderBy("postedAt", Query.Direction.DESCENDING);       //sort recent post on top
-            /*pass quety to firebase UI*/
+            /*pass query to firebase UI*/
             firebaseFirestoreUI(query);
         } else if (togglePrivateTV.getText().equals(StringConstants.PUBLIC_POST)) {
             //filter post public
@@ -167,7 +168,7 @@ public class HomeFragment extends Fragment {
                 .setLifecycleOwner(getActivity())
                 .build();
 
-        FirestoreRecyclerAdapter adapter = new FirestoreRecyclerAdapter<MemeUploads, MemeHolder>(options) {
+        adapter = new FirestoreRecyclerAdapter<MemeUploads, MemeHolder>(options) {
 
             @NonNull
             @Override
@@ -221,7 +222,6 @@ public class HomeFragment extends Fragment {
         };
         //attaching the adapter to my recycler view
         recyclerView.setAdapter(adapter);
-
     }
 
     private void holderItemLongClick(MemeHolder holder, int position, MemeUploads model) {
@@ -284,7 +284,6 @@ public class HomeFragment extends Fragment {
                         confirmationBottomSheetFragment.show(getFragmentManager(), confirmationBottomSheetFragment.getTag());
                     }
                 }
-
                 return true;
             }
         });
