@@ -1,5 +1,6 @@
 package com.mcdev.memery;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -128,8 +129,8 @@ public class LottieDialogFragment extends DialogFragment {
                             Objects.requireNonNull(getDialog()).dismiss();      //dismiss this dialgo fragment after upload success
                             Log.d(TAG, "Upload Success");
                             Toast.makeText(getContext(), "Upload Success", Toast.LENGTH_SHORT).show();
-                            Objects.requireNonNull(getActivity()).finish();     //finish the activity from which the dialog fragment resides(AddMemeFromDeviceActivity)
-                            Bungee.zoom(getActivity());
+                            requireActivity().finish();     //finish the activity from which the dialog fragment resides(AddMemeFromDeviceActivity)
+                            Bungee.zoom(requireActivity());
                         });
             });
 

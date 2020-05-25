@@ -14,12 +14,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <!--view meme activity-->
+        <!--Splash screen-->
+        <activity android:name=".SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- view meme activity -->
         <activity
             android:name=".ViewMemeActivity"
             android:label="@string/title_activity_viewMeme"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <!-- add meme from device activity -->
+            android:theme="@style/AppTheme.NoActionBar" /> <!-- add meme from device activity -->
         <activity android:name=".AddMemeFromDeviceActivity">
 
             <!-- intent filter to get image when they are shared from the device's gallery app -->
@@ -43,7 +50,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity> <!-- Home activity -->
         <activity android:name=".Home">

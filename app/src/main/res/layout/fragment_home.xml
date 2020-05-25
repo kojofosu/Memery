@@ -6,12 +6,39 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".HomeFragment">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/no_meme_lottie_animation"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="true"
+            app:lottie_rawRes="@raw/nomeme"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/no_meme_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No Memes"
+            android:gravity="center"
+            android:textSize="35sp"
+            android:visibility="gone"
+            android:layout_below="@id/no_meme_lottie_animation"/>
+    </RelativeLayout>
+    <!--Lottie Animation to display when recycler view is empty-->
+
+
+    <!--Recycler view-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/home_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@android:color/white"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/home_fab"
@@ -29,7 +56,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|top"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="45dp"
         android:layout_marginStart="20dp">
 
         <TextView

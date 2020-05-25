@@ -44,14 +44,14 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.navigation:navigation-fragment:2.2.2'
     implementation 'androidx.navigation:navigation-ui:2.2.2'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     //lottie files
     implementation 'com.airbnb.android:lottie:3.4.0'
     //firebase google analytics
-    implementation 'com.google.firebase:firebase-analytics:17.4.1'
+    implementation 'com.google.firebase:firebase-analytics:17.4.2'
     //firebase authentication
     implementation 'com.google.firebase:firebase-auth:19.3.1'
     //firebase firestore database
@@ -85,7 +85,7 @@ dependencies {
     //image picker
     implementation 'com.github.tizisdeepan:gallerypicker:1.0.1'
     //blur view for video
-    implementation 'com.github.mmin18:realtimeblurview:1.2.1'
+    implementation 'com.github.mmin18:realtimeblurview:1.2.1'       //unused
     //downloader for youtube
 //    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
 //    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:v2.1.0'
@@ -100,7 +100,8 @@ dependencies {
     //switch lib
     implementation 'com.rm:rmswitch:1.2.2'              //unused
     //activity animations
-    implementation 'com.github.Binary-Finery:Bungee:2.0'
+    //implementation 'com.github.Binary-Finery:Bungee:2.0'
+    implementation 'com.github.kojofosu:Bungee:2.1'
     //item animations
     implementation 'com.github.gayanvoice:android-animations:1.0.2'
     //switch lib
@@ -109,4 +110,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-core:2.10.5'
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.10.5'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.10.5'
+    //lazie library
+    implementation 'com.github.kojofosu:Lazie-library:1.0.2'
+//    implementation 'com.github.kojofosu:Lazie-library:master-SNAPSHOT'
 }

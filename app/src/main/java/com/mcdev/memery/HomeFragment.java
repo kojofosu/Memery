@@ -24,6 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieDrawable;
 import com.andrognito.flashbar.Flashbar;
 import com.andrognito.flashbar.anim.FlashAnim;
 import com.bumptech.glide.Glide;
@@ -43,6 +45,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import render.animations.Attention;
@@ -66,6 +69,9 @@ public class HomeFragment extends Fragment {
     private String currentUserId;
     FirestoreRecyclerAdapter adapter;
 
+    LottieAnimationView noMemeAnimation;
+    TextView noMemeTV;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -80,17 +86,12 @@ public class HomeFragment extends Fragment {
         //init
         init(view);
 
-
         //shared prefs
         sharedPreferences = requireContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
         currentUserId = sharedPreferences.getString("userID", "");
 
-
         //listeners
         fabListener();
-
-
-
 
         //firebase stuff
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -104,9 +105,6 @@ public class HomeFragment extends Fragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-
-
-
 
 
         return view;
@@ -170,6 +168,9 @@ public class HomeFragment extends Fragment {
 
         adapter = new FirestoreRecyclerAdapter<MemeUploads, MemeHolder>(options) {
 
+
+
+
             @NonNull
             @Override
             public MemeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -177,6 +178,46 @@ public class HomeFragment extends Fragment {
 
                 return new MemeHolder(view);
             }
+
+            /*getting item count*/
+            @Override
+            public int getItemCount() {
+                return super.getItemCount();
+            }
+
+            /*checking if item count is zero or not*/
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+
+                /*checking if recycler view is null*/
+                if (Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() == 0) {
+                    Log.d(TAG, "Recycler view is empty with item count " + recyclerView.getAdapter().getItemCount());
+                    /*show no data lottie animation*/
+                    noMemeAnimation.setVisibility(View.VISIBLE);       //make visible
+                    noMemeTV.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);      //disappear`
+                } else if (recyclerView.getAdapter().getItemCount() > 0) {
+                    Log.d(TAG, "Recycler view is not empty with item count " + recyclerView.getAdapter().getItemCount());
+                    noMemeAnimation.setVisibility(View.GONE);       //disappear
+                    noMemeTV.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);       //make visible
+                }
+
+//                if (getItemCount() == 0) {
+//                    Log.d(TAG, "Recycler view is empty with item count " + getItemCount());
+//                    /*show no data lottie animation*/
+//                    noMemeAnimation.setVisibility(View.VISIBLE);       //make visible
+//                    noMemeTV.setVisibility(View.VISIBLE);
+//                    recyclerView.setVisibility(View.GONE);      //disappear`
+//                } else if (getItemCount() > 0){
+//                    Log.d(TAG, "Recycler view is not empty with item count " + getItemCount());
+//                    noMemeAnimation.setVisibility(View.GONE);       //disappear
+//                    noMemeTV.setVisibility(View.GONE);
+//                    recyclerView.setVisibility(View.VISIBLE);       //make visible
+//                }
+            }
+
 
             @Override
             protected void onBindViewHolder(@NonNull MemeHolder holder, int position, @NonNull MemeUploads model) {
@@ -220,6 +261,8 @@ public class HomeFragment extends Fragment {
                 holderItemLongClick(holder, position, model);
             }
         };
+
+
         //attaching the adapter to my recycler view
         recyclerView.setAdapter(adapter);
     }
@@ -340,6 +383,8 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.home_recyclerview);
         togglePrivateLayout = view.findViewById(R.id.home_set_private_linearLayout);
         togglePrivateTV = view.findViewById(R.id.home_set_private_textView);
+        noMemeAnimation = view.findViewById(R.id.no_meme_lottie_animation);
+        noMemeTV = view.findViewById(R.id.no_meme_text_view);
     }
 
     @Override
