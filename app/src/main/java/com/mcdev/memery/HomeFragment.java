@@ -163,7 +163,7 @@ public class HomeFragment extends Fragment {
 
         FirestoreRecyclerOptions<MemeUploads> options = new FirestoreRecyclerOptions.Builder<MemeUploads>()
                 .setQuery(query, MemeUploads.class)
-                .setLifecycleOwner(getActivity())
+//                .setLifecycleOwner(getActivity())
                 .build();
 
         adapter = new FirestoreRecyclerAdapter<MemeUploads, MemeHolder>(options) {
@@ -435,5 +435,20 @@ public class HomeFragment extends Fragment {
                     fileExtension.toLowerCase());
         }
         return mimeType;
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (adapter != null) {
+            adapter.stopListening();
+        }
     }
 }
