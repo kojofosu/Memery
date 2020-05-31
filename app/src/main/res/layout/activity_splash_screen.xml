@@ -6,12 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".SplashScreen">
 
-    <TextView
-        android:id="@+id/splash_app_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:textSize="50sp"
-        android:textStyle="bold"/>
+    <su.levenetc.android.textsurface.TextSurface
+        android:id="@+id/textSurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+<!--    <TextView-->
+<!--        android:id="@+id/splash_app_name"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:textSize="50sp"-->
+<!--        android:textStyle="bold"/>-->
+
+<!--    <com.sarnava.textwriter.TextWriter-->
+<!--        android:id="@+id/textWriter"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"/>-->
 
 </RelativeLayout>
