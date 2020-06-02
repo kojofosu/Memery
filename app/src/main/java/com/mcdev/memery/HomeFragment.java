@@ -163,7 +163,7 @@ public class HomeFragment extends Fragment {
 
         FirestoreRecyclerOptions<MemeUploads> options = new FirestoreRecyclerOptions.Builder<MemeUploads>()
                 .setQuery(query, MemeUploads.class)
-//                .setLifecycleOwner(getActivity())
+                .setLifecycleOwner(getParentFragment())
                 .build();
 
         adapter = new FirestoreRecyclerAdapter<MemeUploads, MemeHolder>(options) {
@@ -265,6 +265,7 @@ public class HomeFragment extends Fragment {
 
         //attaching the adapter to my recycler view
         recyclerView.setAdapter(adapter);
+        adapter.startListening();
     }
 
     private void holderItemLongClick(MemeHolder holder, int position, MemeUploads model) {
@@ -441,8 +442,10 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        adapter.notifyDataSetChanged();
         adapter.startListening();
     }
+
 
     @Override
     public void onDestroyView() {
