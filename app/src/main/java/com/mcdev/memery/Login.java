@@ -4,10 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,6 +27,15 @@ import com.facebook.FacebookSdk;
 import com.facebook.internal.CallbackManagerImpl;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthCredential;
@@ -64,7 +76,13 @@ public class Login extends AppCompatActivity {
     Users users = new Users();
 
     private static final String TAG = Login.class.getSimpleName();
-    VideoView loginVideoView;
+//    VideoView loginVideoView;
+    SimpleExoPlayer player;
+    PlayerView playerView;
+    private int currentWindow = 0;
+    private long playbackPosition = 0;
+    private boolean playWhenReady = true;
+    Uri vidUri;
 
     //firebase
     FirebaseFirestore firestoreReference;
@@ -134,7 +152,9 @@ public class Login extends AppCompatActivity {
 //                                });
                                 String proxyUrl = MediaLoader.getInstance(getApplicationContext()).getProxyUrl(backgroundFile);
                                 Log.d(TAG, "proxy url : " + proxyUrl);
-                                loadVideoVideo(proxyUrl);
+//                                loadVideoVideo(proxyUrl);
+                                vidUri = Uri.parse(proxyUrl);
+                                initializePlayer(vidUri);
                                 if (mediaLoader.isCached(proxyUrl)){
                                     Log.d(TAG, "proxy url is cached : ");
                                 }else{
@@ -154,7 +174,9 @@ public class Login extends AppCompatActivity {
                                         Log.d(TAG, "cached progress ; " + progress);
 
 //                                        String proxyUrl = MediaLoader.getInstance(Login.this).getProxyUrl(backgroundFile);      //video cache
-                                        loadVideoVideo(url);
+//                                        loadVideoVideo(url);
+                                        vidUri = Uri.parse(url);
+                                        initializePlayer(vidUri);
                                     }
 
                                     @Override
@@ -193,6 +215,24 @@ public class Login extends AppCompatActivity {
         twitterLoginStuff();
 
 
+    }
+
+    private void initializePlayer(Uri uri) {
+        player = ExoPlayerFactory.newSimpleInstance(getApplicationContext());       //instantiating player
+        playerView.setPlayer(player);
+        player.setPlayWhenReady(true);
+        player.setRepeatMode(Player.REPEAT_MODE_ONE);
+        player.seekTo(currentWindow, playbackPosition);
+        player.setVolume(0f);
+        MediaSource mediaSource = buildMediaSource(uri);
+        player.prepare(mediaSource);
+    }
+
+    private MediaSource buildMediaSource(Uri uri) {
+        DataSource.Factory dataSourceFactory =
+                new DefaultDataSourceFactory(this, "exoplayer-sample");
+        return new ProgressiveMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(uri);
     }
 
     private void videoCaching() {
@@ -433,43 +473,43 @@ public class Login extends AppCompatActivity {
         });
     }
 
-    private void loadVideoVideo(String backgroundFile) {
-        Log.d(TAG, "backgroundVideo " + backgroundFile);
-        loginVideoView.setVideoPath(backgroundFile);        //setting video path
-        loginVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                mediaPlayer.setLooping(true);       //setting looping to true
-                setVolume(0, mediaPlayer);      //mute audio
-                //Get your video's width and height
-                int videoWidth = mediaPlayer.getVideoWidth();
-                int videoHeight = mediaPlayer.getVideoHeight();
-
-                //Get VideoView's current width and height
-                int videoViewWidth = loginVideoView.getWidth();
-                int videoViewHeight = loginVideoView.getHeight();
-
-                float xScale = (float) videoViewWidth / videoWidth;
-                float yScale = (float) videoViewHeight / videoHeight;
-
-                //For Center Crop use the Math.max to calculate the scale
-                //float scale = Math.max(xScale, yScale);
-                //For Center Inside use the Math.min scale.
-                //I prefer Center Inside so I am using Math.min
-                float scale = Math.max(xScale, yScale);
-
-                float scaledWidth = scale * videoWidth;
-                float scaledHeight = scale * videoHeight;
-
-                //Set the new size for the VideoView based on the dimensions of the video
-                ViewGroup.LayoutParams layoutParams = loginVideoView.getLayoutParams();
-                layoutParams.width = (int)scaledWidth;
-                layoutParams.height = (int)scaledHeight;
-                loginVideoView.setLayoutParams(layoutParams);
-            }
-        });
-        loginVideoView.start(); //start playing video
-    }
+//    private void loadVideoVideo(String backgroundFile) {
+//        Log.d(TAG, "backgroundVideo " + backgroundFile);
+//        loginVideoView.setVideoPath(backgroundFile);        //setting video path
+//        loginVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//            @Override
+//            public void onPrepared(MediaPlayer mediaPlayer) {
+//                mediaPlayer.setLooping(true);       //setting looping to true
+//                setVolume(0, mediaPlayer);      //mute audio
+//                //Get your video's width and height
+//                int videoWidth = mediaPlayer.getVideoWidth();
+//                int videoHeight = mediaPlayer.getVideoHeight();
+//
+//                //Get VideoView's current width and height
+//                int videoViewWidth = loginVideoView.getWidth();
+//                int videoViewHeight = loginVideoView.getHeight();
+//
+//                float xScale = (float) videoViewWidth / videoWidth;
+//                float yScale = (float) videoViewHeight / videoHeight;
+//
+//                //For Center Crop use the Math.max to calculate the scale
+//                //float scale = Math.max(xScale, yScale);
+//                //For Center Inside use the Math.min scale.
+//                //I prefer Center Inside so I am using Math.min
+//                float scale = Math.max(xScale, yScale);
+//
+//                float scaledWidth = scale * videoWidth;
+//                float scaledHeight = scale * videoHeight;
+//
+//                //Set the new size for the VideoView based on the dimensions of the video
+//                ViewGroup.LayoutParams layoutParams = loginVideoView.getLayoutParams();
+//                layoutParams.width = (int)scaledWidth;
+//                layoutParams.height = (int)scaledHeight;
+//                loginVideoView.setLayoutParams(layoutParams);
+//            }
+//        });
+//        loginVideoView.start(); //start playing video
+//    }
 
     private void setVolume(int amount, MediaPlayer mediaPlayer) {
         final int max = 100;
@@ -480,7 +520,8 @@ public class Login extends AppCompatActivity {
     }
 
     private void init() {
-        loginVideoView = findViewById(R.id.login_video_view);
+//        loginVideoView = findViewById(R.id.login_video_view);
+        playerView = findViewById(R.id.login_player_view);
         facebookLoginButton = findViewById(R.id.facebook_login_btn);
         twitterLoginButton = findViewById(R.id.twitter_login_btn);
     }
@@ -513,4 +554,67 @@ public class Login extends AppCompatActivity {
 
 
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (Util.SDK_INT >= 24) {
+            if (vidUri != null) {
+                initializePlayer(vidUri);
+            }
+        }
+    }
+
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (Util.SDK_INT >= 24) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideSystemUi();
+        if ((Util.SDK_INT < 24 || player == null)) {
+            if (vidUri != null) {
+                initializePlayer(vidUri);
+            }
+        }
+    }
+
+
+
+    /*hideSystemUi is a helper method called in onResume which allows us to have a full screen experience. */
+    @SuppressLint("InlinedApi")
+    private void hideSystemUi() {
+        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (Util.SDK_INT < 24) {
+            releasePlayer();
+        }
+    }
+
+    private void releasePlayer() {
+        if (player != null) {
+            playWhenReady = player.getPlayWhenReady();
+            playbackPosition = player.getCurrentPosition();
+            currentWindow = player.getCurrentWindowIndex();
+            player.release();
+            player = null;
+        }
+    }
+
 }

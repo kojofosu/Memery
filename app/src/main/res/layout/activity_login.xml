@@ -6,15 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".Login">
 
-    <VideoView
-        android:id="@+id/login_video_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="0dp"
-        android:layout_height="0dp" />
+<!--    <VideoView-->
+<!--        android:id="@+id/login_video_view"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        android:layout_gravity="center_horizontal"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp" />-->
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/login_player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:show_buffering="always"
+        app:show_timeout="10000"
+        app:resize_mode="zoom"
+        app:use_controller="false"
+        app:controller_layout_id="@layout/custom_playback_control"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
