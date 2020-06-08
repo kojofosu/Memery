@@ -27,8 +27,6 @@ import com.twitter.sdk.android.core.TwitterSession;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 
 /*TODO
  *  add custom progress bar for logging out*/
@@ -102,8 +100,8 @@ public class ProfileFragment extends Fragment {
             String userEmail = firebaseUser.getEmail();
             String userPhone = firebaseUser.getPhoneNumber();
             String uid = firebaseUser.getUid();
-            SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
-            sharedPreferences.edit().putString("userID", uid).apply();
+            SharedPreferences sharedPreferences = requireContext().getSharedPreferences(StringConstants.SHARE_PREF_USER_DETAILS, Context.MODE_PRIVATE);
+            sharedPreferences.edit().putString(StringConstants.SHARE_PREF_USER_ID, uid).apply();
             sharedPreferences.edit().apply();
             //checking to see if user is logged in with facebook or twitter so i can handle the profile images well to display in HD
             if (isUserLoggedInWithFacebook()){

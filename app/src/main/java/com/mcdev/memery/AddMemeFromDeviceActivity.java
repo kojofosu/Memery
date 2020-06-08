@@ -22,7 +22,6 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mcdev.memery.General.StringConstants;
 import com.squareup.picasso.Picasso;
-import com.suke.widget.SwitchButton;
 
 import render.animations.Attention;
 import render.animations.Render;
@@ -179,8 +178,8 @@ public class AddMemeFromDeviceActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //first posting the meme to firebase storage to get the download url
                 String caption = memeCaptionET.getText().toString().trim();
-                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserDetails", MODE_PRIVATE);
-                String eyeDee = sharedPreferences.getString("userID", null);
+                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(StringConstants.SHARE_PREF_USER_DETAILS, MODE_PRIVATE);
+                String eyeDee = sharedPreferences.getString(StringConstants.SHARE_PREF_USER_ID, null);
                 Log.d(TAG, "userID " + eyeDee);
                 Log.d(TAG, "Uri for storage " + URI);
                 if (eyeDee != null){

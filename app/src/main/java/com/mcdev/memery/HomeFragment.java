@@ -25,7 +25,6 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.LottieDrawable;
 import com.andrognito.flashbar.Flashbar;
 import com.andrognito.flashbar.anim.FlashAnim;
 import com.bumptech.glide.Glide;
@@ -33,8 +32,11 @@ import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.protobuf.StringValue;
 import com.mcdev.memery.General.StringConstants;
 import com.mcdev.memery.POJOS.MemeUploads;
 import com.squareup.picasso.Picasso;
@@ -65,7 +67,6 @@ public class HomeFragment extends Fragment {
     private LinearLayout togglePrivateLayout;
     private TextView togglePrivateTV;
     private FirebaseFirestore firebaseFirestore;
-    private SharedPreferences sharedPreferences;
     private String currentUserId;
     FirestoreRecyclerAdapter adapter;
 
@@ -86,9 +87,10 @@ public class HomeFragment extends Fragment {
         //init
         init(view);
 
-        //shared prefs
-        sharedPreferences = requireContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
-        currentUserId = sharedPreferences.getString("userID", "");
+        //get user info
+        currentUserId = getCurrentUserId();
+        Log.d(TAG, "current user id : " + currentUserId);
+
 
         //listeners
         fabListener();
@@ -270,8 +272,8 @@ public class HomeFragment extends Fragment {
 
     private void holderItemLongClick(MemeHolder holder, int position, MemeUploads model) {
         /*getting current user id from shared preferences*/
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserDetails", MODE_PRIVATE);
-        String currentUserId = sharedPreferences.getString("userID", null);
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(StringConstants.SHARE_PREF_USER_DETAILS, MODE_PRIVATE);
+        String currentUserId = sharedPreferences.getString(StringConstants.SHARE_PREF_USER_ID, null);
         Log.d(TAG, "currentUserID " + currentUserId);
         holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -453,5 +455,22 @@ public class HomeFragment extends Fragment {
         if (adapter != null) {
             adapter.stopListening();
         }
+    }
+
+    private String getCurrentUserId() {
+        String uid = null;
+        //getting user info
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null){
+            String username = firebaseUser.getDisplayName();
+            String userEmail = firebaseUser.getEmail();
+            String userPhone = firebaseUser.getPhoneNumber();
+            uid = firebaseUser.getUid();
+            SharedPreferences sharedPreferences = requireContext().getSharedPreferences(StringConstants.SHARE_PREF_USER_DETAILS, Context.MODE_PRIVATE);
+            sharedPreferences.edit().putString(StringConstants.SHARE_PREF_USER_ID, uid).apply();
+            sharedPreferences.edit().apply();
+        }
+
+        return uid;
     }
 }

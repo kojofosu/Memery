@@ -35,6 +35,10 @@ public class StringConstants {
     public final static String UPLOADED_BY = "uploadedBy";
 
 
+    /*SHARED PREFERENCES*/
+    public final static String SHARE_PREF_USER_ID = "userID";
+    public final static String SHARE_PREF_USER_DETAILS = "userID";
+
     /*LOTTIE DIALOG FRAGMENT*/
     public enum DialogType{
         SIGN_IN,

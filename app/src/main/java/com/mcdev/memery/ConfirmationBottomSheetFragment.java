@@ -1,9 +1,7 @@
 package com.mcdev.memery;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -64,7 +62,7 @@ public class ConfirmationBottomSheetFragment extends BottomSheetDialogFragment {
         //init custom dialog
         lottieDialogFragment = new LottieDialogFragment();
         //sharedPrefs
-        sharedPreferences = requireContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
+        sharedPreferences = requireContext().getSharedPreferences(StringConstants.SHARE_PREF_USER_DETAILS, Context.MODE_PRIVATE);
 
         //init Firebase stuff
         initFirebaseStuff();
@@ -175,10 +173,11 @@ public class ConfirmationBottomSheetFragment extends BottomSheetDialogFragment {
 
     }
 
-    @SuppressLint("CommitPrefEdits")
+//    @SuppressLint("CommitPrefEdits")
     private void SendUserToLoginActivity() {
-        sharedPreferences.edit().clear();    //clearing data in shared preference
-        sharedPreferences.edit().apply();       //applying changes
+        sharedPreferences.edit().remove(StringConstants.SHARE_PREF_USER_ID);    //clearing data in shared preference
+        sharedPreferences.edit().commit();       //applying changes
+
         GetIntents getIntents = new GetIntents();       //init  getIntents
         lottieDialogFragment.dismiss();     //dismiss dialog
         getIntents.goToLogin(getActivity());        //start intent
