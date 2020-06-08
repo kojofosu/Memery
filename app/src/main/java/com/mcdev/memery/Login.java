@@ -371,6 +371,7 @@ public class Login extends AppCompatActivity {
 
     private void facebookLoginStuff() {
         //facebook login button
+        FacebookSdk.fullyInitialize();      //initializing facebook SDK
         facebookCallbackManager = CallbackManager.Factory.create(); //creating facebook callback
         facebookLoginButton.setPermissions("email", "public_profile");
         facebookLoginButton.registerCallback(facebookCallbackManager, new FacebookCallback<LoginResult>() {
@@ -468,7 +469,7 @@ public class Login extends AppCompatActivity {
             public void onError(FacebookException error) {
                 //lottieDialogFragment.dismiss();         //dismiss custom dialog
                 Toast.makeText(Login.this, "Error Occurred", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "onErrorFacebookLogin: " + error.getMessage() + "\n caused by :" + error.getCause());
+                Log.e(TAG, "onErrorFacebookLogin: " + error.getMessage() + "\n caused by :" + error.getCause());
             }
         });
     }
