@@ -457,6 +457,8 @@ public class HomeFragment extends Fragment {
         }
     }
 
+
+    /*get the current user who has logged in's current ID*/
     private String getCurrentUserId() {
         String uid = null;
         //getting user info
