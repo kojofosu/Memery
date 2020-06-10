@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,8 +38,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.protobuf.StringValue;
+import com.iammert.library.ui.multisearchviewlib.MultiSearchView;
 import com.mcdev.memery.General.StringConstants;
 import com.mcdev.memery.POJOS.MemeUploads;
+import com.mcdev.memery.databinding.FragmentHomeBinding;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -84,6 +87,28 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        FragmentHomeBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_home, container, false);
+        binding.multiSearchView.setSearchViewListener(new MultiSearchView.MultiSearchViewListener() {
+            @Override
+            public void onTextChanged(int i, @NotNull CharSequence charSequence) {
+
+            }
+
+            @Override
+            public void onSearchComplete(int i, @NotNull CharSequence charSequence) {
+
+            }
+
+            @Override
+            public void onSearchItemRemoved(int i) {
+
+            }
+
+            @Override
+            public void onItemSelected(int i, @NotNull CharSequence charSequence) {
+
+            }
+        });
         //init
         init(view);
 
@@ -373,9 +398,10 @@ public class HomeFragment extends Fragment {
         homeFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*,video/*");
-                startActivityForResult(intent, PickMeme);
+                startActivity(new Intent(getApplicationContext(), SearchActivity.class));
+//                Intent intent = new Intent(Intent.ACTION_PICK);
+//                intent.setType("image/*,video/*");
+//                startActivityForResult(intent, PickMeme);
             }
         });
     }

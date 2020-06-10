@@ -1,76 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".HomeFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".HomeFragment">
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/no_meme_lottie_animation"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="500dp"
-            app:lottie_loop="true"
-            app:lottie_autoPlay="true"
-            app:lottie_rawRes="@raw/nomeme"
-            android:visibility="gone"/>
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/no_meme_text_view"
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/no_meme_lottie_animation"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                app:lottie_loop="true"
+                app:lottie_autoPlay="true"
+                app:lottie_rawRes="@raw/nomeme"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/no_meme_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No Memes"
+                android:gravity="center"
+                android:textSize="35sp"
+                android:visibility="gone"
+                android:layout_below="@id/no_meme_lottie_animation"/>
+        </RelativeLayout>
+        <!--Lottie Animation to display when recycler view is empty-->
+
+
+        <!--Recycler view-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/home_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="No Memes"
-            android:gravity="center"
-            android:textSize="35sp"
-            android:visibility="gone"
-            android:layout_below="@id/no_meme_lottie_animation"/>
-    </RelativeLayout>
-    <!--Lottie Animation to display when recycler view is empty-->
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@android:color/white"/>
 
-
-    <!--Recycler view-->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/home_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@android:color/white"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/home_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:src="@drawable/ic_quote_white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_gravity="bottom|end"/>
-
-
-    <LinearLayout
-        android:id="@+id/home_set_private_linearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|top"
-        android:layout_marginTop="45dp"
-        android:layout_marginStart="20dp">
-
-        <TextView
-            android:id="@+id/home_set_private_textView"
-            android:layout_width="70dp"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/home_fab"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Public"
-            android:textColor="@color/white"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:background="@drawable/bg_private"
-            android:layout_marginEnd="20dp"
-            android:layout_marginStart="20dp"/>
+            android:layout_margin="20dp"
+            android:src="@drawable/ic_quote_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_gravity="bottom|end"/>
 
-    </LinearLayout>
+        <com.iammert.library.ui.multisearchviewlib.MultiSearchView
+            android:id="@+id/multiSearchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            app:searchTextStyle="@style/SearchTextStyle"
+            android:background="#ffffff"/>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <LinearLayout
+            android:id="@+id/home_set_private_linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:layout_marginTop="45dp"
+            android:layout_marginStart="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/home_set_private_textView"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:text="Public"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@drawable/bg_private"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"/>
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>
+

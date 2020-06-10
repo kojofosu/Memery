@@ -14,15 +14,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <!--Splash screen-->
+        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".Searchie" /> <!-- Splash screen -->
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!-- view meme activity -->
+        </activity> <!-- view meme activity -->
         <activity
             android:name=".ViewMemeActivity"
             android:label="@string/title_activity_viewMeme"
