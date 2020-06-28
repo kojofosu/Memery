@@ -95,13 +95,10 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onSearchComplete(int i, @NotNull CharSequence charSequence) {
-                /*filter memes to display private memes by search*/
-                Query query = firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION)
-                        .whereEqualTo("private", true)          //display only private posts
-                        .whereEqualTo("uploadedBy", currentUserId)      //display only posts by current user
-                        .orderBy("postedAt", Query.Direction.DESCENDING);       //sort recent post on top
-                /*pass query to firebase UI*/
-                firebaseFirestoreUI(query);
+                String searchWord = charSequence.toString();
+                Log.d(TAG, "onSearchComplete: "  + searchWord);
+
+                querie(searchWord, currentUserId, privacy);
             }
 
             @Override
@@ -111,10 +108,39 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onItemSelected(int i, @NotNull CharSequence charSequence) {
+                String searchWord = charSequence.toString();
+                Log.d(TAG, "onItemSelected: " + searchWord);
+                querie(searchWord, currentUserId, privacy);
+                }
 
-            }
         });
     }
+
+    private void querie(String searchWord, String currentUserId, String privacy) {
+        /*checking if user is searching for results in either private or public posts*/
+        if (privacy.equals(getResources().getString(R.string.private_post))) {
+            //private posts
+            /*filter memes to display private memes by search*/
+            Query query = firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION)
+                    .whereEqualTo(StringConstants.PRIVATE, true)          //display only private posts
+                    .whereEqualTo(StringConstants.UPLOADED_BY, currentUserId)      //display only posts by current user
+                    .whereGreaterThanOrEqualTo(StringConstants.MEME_TITLE, searchWord)
+                    .orderBy(StringConstants.MEME_TITLE, Query.Direction.ASCENDING);       //sort recent post on top
+            /*pass query to firebase UI*/
+            firebaseFirestoreUI(query);
+        } else if (privacy.equals(getResources().getString(R.string.public_post))) {
+            //public posts
+            Query query = firebaseFirestore
+                    .collection(StringConstants.MEMERIES_COLLECTION)
+                    .whereGreaterThanOrEqualTo(StringConstants.MEME_TITLE, searchWord)
+                    .whereEqualTo(StringConstants.PRIVATE, false)         //display only public posts
+                    .orderBy(StringConstants.MEME_TITLE, Query.Direction.ASCENDING);       //sort recent posts on top
+            /*pass query to firebase UI*/
+            firebaseFirestoreUI(query);
+        }
+
+    }
+
 
     private void firebaseFirestoreUI(Query query) {
 

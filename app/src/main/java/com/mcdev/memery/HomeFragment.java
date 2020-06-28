@@ -188,17 +188,17 @@ public class HomeFragment extends Fragment {
         if (togglePrivateTV.getText().equals(StringConstants.PRIVATE_POST)){
             /*filter memes to display private memes only by the current user*/
             Query query = firebaseFirestore.collection(StringConstants.MEMERIES_COLLECTION)
-                    .whereEqualTo("private", true)          //display only private posts
-                    .whereEqualTo("uploadedBy", currentUserId)      //display only posts by current user
-                    .orderBy("postedAt", Query.Direction.DESCENDING);       //sort recent post on top
+                    .whereEqualTo(StringConstants.PRIVATE, true)          //display only private posts
+                    .whereEqualTo(StringConstants.UPLOADED_BY, currentUserId)      //display only posts by current user
+                    .orderBy(StringConstants.POSTED_AT, Query.Direction.DESCENDING);       //sort recent post on top
             /*pass query to firebase UI*/
             firebaseFirestoreUI(query);
         } else if (togglePrivateTV.getText().equals(StringConstants.PUBLIC_POST)) {
             //filter post public
             Query query = firebaseFirestore
                     .collection(StringConstants.MEMERIES_COLLECTION)
-                    .whereEqualTo("private", false)         //display only public posts
-                    .orderBy("postedAt", Query.Direction.DESCENDING);       //sort recent posts on top
+                    .whereEqualTo(StringConstants.PRIVATE, false)         //display only public posts
+                    .orderBy(StringConstants.POSTED_AT, Query.Direction.DESCENDING);       //sort recent posts on top
             /*pass query to firebase UI*/
             firebaseFirestoreUI(query);
         }
