@@ -16,6 +16,9 @@ import kotlinx.android.synthetic.main.activity_searchie.view.*
 //import com.iammert.library.ui.multisearchview.databinding.ActivityMainBinding
 //import com.iammert.library.ui.multisearchviewlib.MultiSearchView
 
+
+
+/*This class is just the kotlin equivalent for the multi search view..currently not using this class bcz i found a way to implement the multi search view in java*/
 class Searchie : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

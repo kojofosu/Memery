@@ -3,12 +3,15 @@ package com.mcdev.memery;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import com.iammert.library.ui.multisearchviewlib.MultiSearchView;
 import com.mcdev.memery.databinding.ActivitySearchBinding;
 
 import org.jetbrains.annotations.NotNull;
+
+import spencerstudios.com.bungeelib.Bungee;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -40,5 +43,13 @@ public class SearchActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        Bungee.slideRight(this);
     }
 }

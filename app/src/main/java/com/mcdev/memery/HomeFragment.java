@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -72,6 +73,7 @@ public class HomeFragment extends Fragment {
     private FirebaseFirestore firebaseFirestore;
     private String currentUserId;
     FirestoreRecyclerAdapter adapter;
+    private ImageButton searchImageButton;
 
     LottieAnimationView noMemeAnimation;
     TextView noMemeTV;
@@ -87,28 +89,28 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        FragmentHomeBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_home, container, false);
-        binding.multiSearchView.setSearchViewListener(new MultiSearchView.MultiSearchViewListener() {
-            @Override
-            public void onTextChanged(int i, @NotNull CharSequence charSequence) {
-
-            }
-
-            @Override
-            public void onSearchComplete(int i, @NotNull CharSequence charSequence) {
-
-            }
-
-            @Override
-            public void onSearchItemRemoved(int i) {
-
-            }
-
-            @Override
-            public void onItemSelected(int i, @NotNull CharSequence charSequence) {
-
-            }
-        });
+//        FragmentHomeBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_home, container, false);
+//        binding.multiSearchView.setSearchViewListener(new MultiSearchView.MultiSearchViewListener() {
+//            @Override
+//            public void onTextChanged(int i, @NotNull CharSequence charSequence) {
+//
+//            }
+//
+//            @Override
+//            public void onSearchComplete(int i, @NotNull CharSequence charSequence) {
+//
+//            }
+//
+//            @Override
+//            public void onSearchItemRemoved(int i) {
+//
+//            }
+//
+//            @Override
+//            public void onItemSelected(int i, @NotNull CharSequence charSequence) {
+//
+//            }
+//        });
         //init
         init(view);
 
@@ -119,6 +121,9 @@ public class HomeFragment extends Fragment {
 
         //listeners
         fabListener();
+
+        //search button listener
+        searchButtonListener();
 
         //firebase stuff
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -135,6 +140,16 @@ public class HomeFragment extends Fragment {
 
 
         return view;
+    }
+
+    private void searchButtonListener() {
+        searchImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), SearchActivity.class));
+                Bungee.slideLeft(requireActivity());
+            }
+        });
     }
 
     private void togglePrivateListener() {
@@ -398,10 +413,9 @@ public class HomeFragment extends Fragment {
         homeFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), SearchActivity.class));
-//                Intent intent = new Intent(Intent.ACTION_PICK);
-//                intent.setType("image/*,video/*");
-//                startActivityForResult(intent, PickMeme);
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*,video/*");
+                startActivityForResult(intent, PickMeme);
             }
         });
     }
@@ -414,6 +428,7 @@ public class HomeFragment extends Fragment {
         togglePrivateTV = view.findViewById(R.id.home_set_private_textView);
         noMemeAnimation = view.findViewById(R.id.no_meme_lottie_animation);
         noMemeTV = view.findViewById(R.id.no_meme_text_view);
+        searchImageButton = view.findViewById(R.id.home_search_btn);
     }
 
     @Override
