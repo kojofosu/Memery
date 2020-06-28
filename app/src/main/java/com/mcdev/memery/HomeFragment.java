@@ -146,7 +146,10 @@ public class HomeFragment extends Fragment {
         searchImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), SearchActivity.class));
+                Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+                intent.putExtra("currentUserID", currentUserId);
+                intent.putExtra("privacy", togglePrivateTV.getText());
+                startActivity(intent);
                 Bungee.slideLeft(requireActivity());
             }
         });
@@ -209,10 +212,6 @@ public class HomeFragment extends Fragment {
                 .build();
 
         adapter = new FirestoreRecyclerAdapter<MemeUploads, MemeHolder>(options) {
-
-
-
-
             @NonNull
             @Override
             public MemeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
