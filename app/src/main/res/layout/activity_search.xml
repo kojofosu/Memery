@@ -3,34 +3,39 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        app:layoutDescription="@xml/activity_search_xml_constraintlayout_scene">
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="32dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="100dp"
             android:text="Search"
             android:textColor="#000"
             android:textSize="32sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <com.iammert.library.ui.multisearchviewlib.MultiSearchView
             android:id="@+id/multiSearchView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/tv" />
 
         <!--Recycler view-->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/search_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@android:color/white"/>
-    </LinearLayout>
+            android:background="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/multiSearchView" />
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>
