@@ -124,6 +124,7 @@ dependencies {
     //text surface view
     implementation 'com.github.iammert:TextSurface:-SNAPSHOT'
     //multi search view
-    implementation 'com.github.kobeumut:MultiSearchView:3293a465c2'
+    implementation 'com.github.kojofosu:MultiSearchView:icon-feature-SNAPSHOT'
+//    implementation 'com.github.kobeumut:MultiSearchView:3293a465c2'
 //    implementation 'com.github.iammert:MultiSearchView:0.2'
 }

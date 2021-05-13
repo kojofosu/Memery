@@ -53,6 +53,7 @@ public class SearchActivity extends AppCompatActivity {
     FirestoreRecyclerAdapter adapter;
     private String currentUserID, privacy;
     private RecyclerView recyclerView;
+    MultiSearchView multiSearchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

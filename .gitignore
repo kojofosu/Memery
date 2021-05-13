@@ -13,6 +13,6 @@
 .externalNativeBuild
 .cxx
 gradlew
-idea/
+.idea/
 gradlew.bat
 
